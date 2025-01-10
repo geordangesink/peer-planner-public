@@ -1,0 +1,13 @@
+.current-time {
+  display: flex;
+  width: 100%;
+  height: var(--title-bar-height);
+  margin-left: 50px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.current-time > h4{
+  margin-top: 5px;
+}

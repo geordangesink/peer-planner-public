@@ -1,0 +1,77 @@
+.calendar-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+h3 {
+  width: 100%;
+  font-size: 1rem;
+  padding: 10px 0;
+  text-align: center;
+}
+
+/********************************************
+          CONTROLL BAR
+********************************************/
+
+.controls {
+  width: 100%;
+  display: flex;
+  margin-top: 10px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.controls * {
+  display: flex;
+  align-items: center;
+}
+
+.month-year.big {
+  width: 400px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.month-year.big > * {
+  margin-right: 30px;
+}
+
+#create-activity-button,
+.my-calendar {
+  margin-right: 20px;
+}
+
+#create-activity-button {
+  height: 30px;
+  width: 80px;
+  background-color: rgb(68, 68, 68);
+}
+
+#create-activity-button:hover {
+  background-color: rgb(99, 99, 99);
+  border: 1px solid black;
+}
+
+.switch-buttons {
+  display: flex;
+}
+
+.calendar-header h2 {
+  font-size: 24px;
+}
+
+#select-calendar-view * {
+  cursor: inherit;
+}
+
+.choose-timespan {
+  width: 180px;
+  display: flex;
+  justify-content: space-between;
+}

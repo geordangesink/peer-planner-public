@@ -1,0 +1,39 @@
+{
+  "name": "calendar-app",
+  "main": "./index.html",
+  "type": "module",
+  "pear": {
+    "name": "calendar-app",
+    "type": "desktop",
+    "gui": {
+      "backgroundColor": "#1F2430",
+      "height": 540,
+      "width": 720
+    }
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "brittle": "^3.0.0",
+    "prettier": "3.3.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "scripts": {
+    "dev": "pear dev",
+    "test": "brittle test/*.test.js"
+  },
+  "dependencies": {
+    "autobase": "^6.5.8",
+    "blind-pairing": "^2.3.1",
+    "corestore": "^6.18.4",
+    "htm": "^3.1.1",
+    "hyperbee": "^2.20.2",
+    "hypercore": "^10.37.25",
+    "hypercore-crypto": "^3.4.2",
+    "hyperswarm": "^4.8.4",
+    "pear": "^1.0.6",
+    "random-access-memory": "^6.2.1",
+    "sodium-native": "^4.1.1",
+    "z32": "^1.1.0"
+  }
+}
