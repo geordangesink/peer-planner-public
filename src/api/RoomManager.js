@@ -24,6 +24,7 @@ import { EventEmitter } from "events";
  * @property {Hyperswarm} [swarm] - Hyperswarm instance
  * @property {BlindPairing} [pairing] - BlindPairing instance
  * @property {Object} [rooms] - roomId key and room instance value
+ * @property {Set} [discoveryKeys] - joined rooms dicovery keys
  */
 export class RoomManager extends EventEmitter {
   constructor(opts = {}) {
@@ -34,6 +35,7 @@ export class RoomManager extends EventEmitter {
     this.swarm = new Hyperswarm();
     this.pairing = new BlindPairing(this.swarm);
     this.rooms = {};
+    this.discoveryKeys = new Set();
   }
 
   get localBee() {
@@ -67,7 +69,7 @@ export class RoomManager extends EventEmitter {
   }
 
   /**
-   * initializes a calendar room
+   * initializes a room (bypasses joinability check)
    * (or creates if no roomId provided)
    * @param {Object} [opts={}] - Room configuration options
    * @param {string} [opts.invite] - Optional invite code
@@ -78,7 +80,9 @@ export class RoomManager extends EventEmitter {
   initRoom(opts = {}) {
     const roomId = opts.roomId || generateRoomId();
     const baseOpts = this.getRoomOptions(roomId);
-    if (opts.invite) baseOpts.invite = opts.invite;
+    if (opts.invite) {
+      baseOpts.invite = opts.invite;
+    }
     baseOpts.topic = opts.topic || generateTopic();
     baseOpts.metadata = opts.metadata || {};
     baseOpts.roomId = roomId;
@@ -96,12 +100,23 @@ export class RoomManager extends EventEmitter {
     return room;
   }
 
+  /**
+   * initializes a ready room and checks if room is alredy joined and invite is valid
+   * @param {Object} [opts={}] - Room configuration options
+   * @returns {CalendarRoom} - New room instance and coresponding inviteKey
+   */
   async initReadyRoom(opts = {}) {
+    if (opts.invite) {
+      const discoveryKey = await this.isJoined(opts.invite);
+      if (discoveryKey === "invalid") return false;
+      else if (discoveryKey) return this._findRoom(discoveryKey);
+    }
     const room = this.initRoom(opts);
-    const inviteHex = await room.ready();
+    await room.ready();
+    if (!this.discoveryKeys.has(room.discoveryKey)) this.discoveryKeys.add(room.discoveryKey);
 
     process.nextTick(() => this.emit("readyRoom", room));
-    return { room, inviteHex };
+    return room;
   }
 
   async updateRoomInfo(room) {
@@ -127,6 +142,16 @@ export class RoomManager extends EventEmitter {
     }
   }
 
+  async isJoined(invite) {
+    try {
+      const discoveryKey = await BlindPairing.decodeInvite(z32.decode(invite)).discoveryKey;
+      return this.discoveryKeys.has(z32.encode(discoveryKey)) && z32.encode(discoveryKey);
+    } catch (err) {
+      console.error(`invalid invite key: ${invite}`);
+      return "invalid";
+    }
+  }
+
   async deleteRoom(room) {
     // TODO: delete room from storage and db
   }
@@ -147,6 +172,14 @@ export class RoomManager extends EventEmitter {
         await this.localBee.put("roomsInfo", Buffer.from(mapToJson(roomsInfoMap)));
       }
     });
+  }
+
+  async _findRoom(discoveryKey) {
+    for (const roomId in this.rooms) {
+      if (this.rooms[roomId].discoveryKey === discoveryKey) {
+        return this.rooms[roomId];
+      }
+    }
   }
 
   async cleanup() {
@@ -224,6 +257,7 @@ export class CalendarRoom extends EventEmitter {
         userData: this.autobee.local.key,
         onadd: async (result) => this._onHostInvite(result),
       });
+      this.discoveryKey = z32.encode(candidate.discoveryKey);
       await candidate.paring;
     } else {
       const baseOpts = {
@@ -235,6 +269,7 @@ export class CalendarRoom extends EventEmitter {
         this.autobee.local.key,
         baseOpts
       );
+      this.discoveryKey = z32.encode(discoveryKey);
       this.metadata.host = {
         publicKey: z32.encode(publicKey),
         discoveryKey: z32.encode(discoveryKey),
@@ -250,7 +285,6 @@ export class CalendarRoom extends EventEmitter {
 
       this.invite = invite;
       this.inviteHex = z32.encode(invite);
-      return this.inviteHex;
     }
   }
 

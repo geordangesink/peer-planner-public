@@ -1,4 +1,3 @@
-// FIX-BUG: same calendars can be joined multiple times
 // can be solved by improving invites (make a list of active invites)
 import { html } from "htm/react";
 import { useRef, useState } from "react";
@@ -42,26 +41,7 @@ export default ({ onClose, onSave, onLeave, isVisible, isCreate, setIsCreate }) 
 
   // TODO: handle errors for wrong key
   const joinRoom = async (info, inviteKey) => {
-    let bee = false;
-    // only handles not joining with same invite key
-    for (const roomId in sharedDbObject) {
-      const room = sharedDbObject[roomId];
-      if (room.invite === inviteKey) {
-        bee = room.autobee;
-        roomIdRef.current = roomId;
-        break;
-      }
-    }
-    if (!bee) {
-      await initCalendarRoom({ info, invite: inviteKey });
-    } else {
-      const schedule = await bee.get("schedule");
-      if (schedule && schedule.value && Object.keys(schedule.value).length !== 0) {
-        setCurrentSchedule(jsonToMap(schedule.value.toString()));
-      } else {
-        setCurrentSchedule(new Map());
-      }
-    }
+    await initCalendarRoom({ info, invite: inviteKey });
   };
 
   if (!isVisible) return null;

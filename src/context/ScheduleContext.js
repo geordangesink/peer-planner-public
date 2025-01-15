@@ -58,12 +58,14 @@ const ScheduleProvider = ({ children }) => {
   // add new shared schedule db
   const initCalendarRoom = async (opts = {}) => {
     try {
-      const { room } = await roomManagerRef.current.initReadyRoom({
+      const room = await roomManagerRef.current.initReadyRoom({
         ...opts,
         isNew: true,
       });
+      if (!room) return;
+
       roomIdRef.current = room.roomId;
-      setCurrentCalendarInfo(opts.info);
+      setCurrentCalendarInfo(room.info);
 
       const bee = room.autobee;
       const scheduleObj = await bee.get("schedule");
