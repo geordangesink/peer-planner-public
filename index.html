@@ -4,21 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PeerPlanner</title>
-    <link rel="stylesheet" href="./style.css" />
-    <link rel="stylesheet" href="./src/components/CalendarHeader/calendar-header.css" />
-    <link rel="stylesheet" href="./src/components/CalendarInterfaceWeek/calendar-interface-week.css" />
-    <link rel="stylesheet" href="./src/components/ConfigureActivity/configure-activity.css" />
-    <link rel="stylesheet" href="./src/components/CurrentTime/current-time.css" />
-    <link rel="stylesheet" href="./src/components/MonthDaysView/month-days-view.css" />
-    <link rel="stylesheet" href="./src/components/PeersView/peers-view.css" />
-    <link rel="stylesheet" href="./src/components/ThisOrAllChange/this-or-all-change.css" />
-    <link rel="stylesheet" href="./src/components/CustomRepeat/custom-repeat.css" />
-    <link rel="stylesheet" href="./src/components/RoomsList/rooms-list.css" />
-    <link rel="stylesheet" href="./src/components/RoomInfo/room-info.css" />
+    <link rel="stylesheet" href="./src/styles.css" />
   </head>
-  <body>
-    <div id="bar">
-      <pear-ctrl></pear-ctrl>
+  <body
+    class="overflow-hidden flex flex-col h-screen min-h-screen m-0 p-0 text-white bg-black overflow-x-hidden font-sans"
+  >
+    <div
+      class="w-full h-title-bar fixed p-0 whitespace-nowrap text-white border-b border-gray-400/40 flex items-center"
+      style="-webkit-app-region: drag"
+    >
+      <pear-ctrl class="ml-3 h-4" style="margin-top: 18px" data-platform="darwin"></pear-ctrl>
     </div>
     <div id="root"></div>
     <!-- INDEX -->

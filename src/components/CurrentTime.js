@@ -26,8 +26,8 @@ export default () => {
   const formattedDate = formatDate(dateTime);
 
   return html`
-    <div className="current-time">
-      <h4 className="header-date">${formattedDate}</h4>
+    <div className="flex w-full h-[var(--title-bar-height)] ml-[50px] flex-col justify-center items-center">
+      <h4 className="mt-[5px]">${formattedDate}</h4>
     </div>
   `;
 };

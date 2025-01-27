@@ -1,8 +1,8 @@
 // TODO: make it less hacky lol
 
-import { html } from "htm/react";
-import { useState, useEffect, useRef } from "react";
-import useDate from "../../hooks/useDate";
+import { html } from 'htm/react';
+import { useState, useEffect, useRef } from 'react';
+import useDate from '../hooks/useDate';
 
 export default ({ isVisibleInner, onCancel, onSave }) => {
   // imports
@@ -11,18 +11,26 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
   // define new react hooks/refs
   // saved settings
   const [repeatEveryNum, setRepeatEveryNum] = useState(1);
-  const [selectedTimeframeSaved, setSelectedTimeframeSaved] = useState("week");
-  const [activeWeekdaysSaved, setActiveWeekdaysSaved] = useState(new Array(7).fill(false));
-  const [onEveryMonthSaved, setOnEveryMonthSaved] = useState("monthly");
-  const [endsSaved, setEndsSaved] = useState("never");
+  const [selectedTimeframeSaved, setSelectedTimeframeSaved] = useState('week');
+  const [activeWeekdaysSaved, setActiveWeekdaysSaved] = useState(
+    new Array(7).fill(false)
+  );
+  const [onEveryMonthSaved, setOnEveryMonthSaved] = useState('monthly');
+  const [endsSaved, setEndsSaved] = useState('never');
   const [endDateSaved, setEndDateSaved] = useState(
-    new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate())
+    new Date(
+      currentDate.getFullYear() + 1,
+      currentDate.getMonth(),
+      currentDate.getDate()
+    )
   );
   const [endRecurrenceSaved, setEndRecurrenceSaved] = useState(12);
 
   // current settings
   const repeatEveryNumRef = useRef(repeatEveryNum);
-  const [selectedTimeframe, setSelectedTimeframe] = useState(selectedTimeframeSaved);
+  const [selectedTimeframe, setSelectedTimeframe] = useState(
+    selectedTimeframeSaved
+  );
   const [activeWeekdays, setActiveWeekdays] = useState(activeWeekdaysSaved);
   const [onEveryMonth, setOnEveryMonth] = useState(onEveryMonthSaved);
   const [ends, setEnds] = useState(endsSaved);
@@ -32,13 +40,21 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
   const repeatEndsRef = useRef(); ///// ADD END DATE
   const popupContentRef = useRef(null); // ref for closing when click outside interface
 
-  const weekdays = ["S", "M", "T", "W", "T", "F", "S"]; // weekdays for weekday selecter
+  const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S']; // weekdays for weekday selecter
   // prepare for month repeat selection render and displayed strings
   const testNextWeekdayDate = new Date(currentDate);
   const testNextDay = new Date(currentDate);
   testNextWeekdayDate.setDate(currentDate.getDate() + 7);
   testNextDay.setDate(currentDate.getDate() + 1);
-  const weekdayAbbreviations = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const weekdayAbbreviations = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
 
   // update default selected weekday based on currentDate
   useEffect(() => {
@@ -94,26 +110,30 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
     setEndRecurrenceSaved(endRecurrence);
 
     // init variables
-    let activeIndices = "day";
+    let activeIndices = 'day';
     let timeframe = selectedTimeframe;
-    let monthSpec = "";
-    let endSpec = "";
+    let monthSpec = '';
+    let endSpec = '';
     // save current settings as objects
-    if (selectedTimeframe === "week") {
-      activeIndices = activeWeekdays.map((active, index) => (active ? index : -1)).filter((index) => index !== -1);
-    } else if (selectedTimeframe === "month") {
+    if (selectedTimeframe === 'week') {
+      activeIndices = activeWeekdays
+        .map((active, index) => (active ? index : -1))
+        .filter((index) => index !== -1);
+    } else if (selectedTimeframe === 'month') {
       monthSpec = onEveryMonth;
 
-      if (onEveryMonth === "monthlyNum" || onEveryMonth === "monthlyLast") {
-        activeIndices = activeWeekdays.map((active, index) => (active ? index : -1)).filter((index) => index !== -1);
+      if (onEveryMonth === 'monthlyNum' || onEveryMonth === 'monthlyLast') {
+        activeIndices = activeWeekdays
+          .map((active, index) => (active ? index : -1))
+          .filter((index) => index !== -1);
       }
-    } else if (selectedTimeframe === "year") {
-      activeIndices = "year";
+    } else if (selectedTimeframe === 'year') {
+      activeIndices = 'year';
     }
     // save end settings
-    if (ends === "date") {
+    if (ends === 'date') {
       endSpec = endDate;
-    } else if (ends === "recurrence") {
+    } else if (ends === 'recurrence') {
       endSpec = endRecurrence;
     }
 
@@ -128,7 +148,10 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
 
   // check if the click was outside the popup content
   const handleOverlayClick = (e) => {
-    if (popupContentRef.current && !popupContentRef.current.contains(e.target)) {
+    if (
+      popupContentRef.current &&
+      !popupContentRef.current.contains(e.target)
+    ) {
       e.stopPropagation(); // dont close CreateActivity
       onCancel();
     }
@@ -137,10 +160,16 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
   if (!isVisibleInner) return null;
 
   return html`
-    <div className="popup-overlay custom-repeat-overlay" onClick=${handleOverlayClick}>
-      <div className="popup-content popup-custom-repeat" ref=${popupContentRef}>
+    <div
+      className="fixed inset-0 w-full h-full bg-black/50 flex items-center justify-center z-[1000] space-x-[10px] space-y-[10px]"
+      onClick=${handleOverlayClick}
+    >
+      <div
+        className="bg-black border border-gray-400/40 p-5 rounded relative w-[400px] h-[500px] shadow-lg flex flex-col items-center justify-start"
+        ref=${popupContentRef}
+      >
         <button
-          className="popup-close"
+          className="absolute top-[10px] right-[10px] text-[1.5rem] border-none bg-none cursor-pointer text-white"
           onClick=${(e) => {
             e.stopPropagation(); // dont close CreateActivity;
             onCancel(); // close
@@ -155,12 +184,12 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
         >
           x
         </button>
-        <h3>Custom recurrence:</h3>
+        <h3 className="w-full ml-[30px]">Custom recurrence:</h3>
 
-        <form className="repeat-every">
+        <form className="repeat-every my-4">
           <span>Repeat every:</span>
           <input
-            className="custom-repeat-num-input"
+            className="w-[60px]"
             id="recurrence-number"
             type="number"
             min="1"
@@ -169,7 +198,7 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
             onKeyDown=${(e) => {
               if (
                 // only allow integer inputs. no 0 if it is the only int
-                ["-", "+", "e", "E", ",", "."].includes(e.key) ||
+                ['-', '+', 'e', 'E', ',', '.'].includes(e.key) ||
                 (e.target.value < 1 && e.key == 0)
               ) {
                 e.preventDefault();
@@ -188,41 +217,81 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
             <option value="year">year</option>
           </select>
         </form>
+<<<<<<< HEAD
         ${selectedTimeframe === "month" // THIS IS COPIED FROM CreateActivity
           ? html`
               <form className="repeat-on">
                 <span>Repeat on</span>
                 <select id="repeat" defaultValue=${onEveryMonth} onChange=${(e) => setOnEveryMonth(e.target.value)}>
                   <option value="monthly">${currentDate.getDate()}. day every Month</option>
+=======
+        ${selectedTimeframe === 'month' // THIS IS COPIED FROM CreateActivity
+          ? html`
+              <form className="repeat-on my-4">
+                <span>Repeat on</span>
+                <select
+                  id="repeat"
+                  defaultValue=${onEveryMonth}
+                  onChange=${(e) => setOnEveryMonth(e.target.value)}
+                >
+                  <option value="monthly">
+                    ${currentDate.getDate()}. day every Month
+                  </option>
+>>>>>>> tailwind
                   <option value="monthlyNum">
                     Week including ${Math.ceil(currentDate.getDate() / 7)}.
                     ${weekdayAbbreviations[currentDate.getDay()]} of Month
                   </option>
                   ${testNextWeekdayDate.getMonth() !== currentDate.getMonth()
                     ? html`<option value="monthlyLast">
+<<<<<<< HEAD
                         Week including last ${weekdayAbbreviations[currentDate.getDay()]} of Month
                       </option>`
                     : ""}
                   ${testNextDay.getMonth() !== currentDate.getMonth()
                     ? html`<option value="monthlyLastDay">last day of Month</option>`
                     : ""}
+=======
+                        Week including last
+                        ${weekdayAbbreviations[currentDate.getDay()]} of Month
+                      </option>`
+                    : ''}
+                  ${testNextDay.getMonth() !== currentDate.getMonth()
+                    ? html`<option value="monthlyLastDay">
+                        last day of Month
+                      </option>`
+                    : ''}
+>>>>>>> tailwind
                 </select>
               </form>
             `
           : null}
+<<<<<<< HEAD
         ${selectedTimeframe === "week" ||
         (selectedTimeframe === "month" && onEveryMonth === "monthlyLast") ||
         (selectedTimeframe === "month" && onEveryMonth === "monthlyNum")
           ? html`
               <div className="repeat-on-weekday">
+=======
+        ${selectedTimeframe === 'week' ||
+        (selectedTimeframe === 'month' && onEveryMonth === 'monthlyLast') ||
+        (selectedTimeframe === 'month' && onEveryMonth === 'monthlyNum')
+          ? html`
+              <div className="repeat-on-weekday my-4">
+>>>>>>> tailwind
                 <span>Repeat on:</span>
 
-                <div className="weekday-buttons">
+                <div className="flex flex-row">
                   ${weekdays.map(
                     (day, index) => html`
                       <button
+<<<<<<< HEAD
                         key=${index + "select-weekday"}
-                        className=${`circle-button ${activeWeekdays[index] ? "selected-day" : ""}`}
+                        className=${`h-[30px] w-[30px] m-1.25 rounded-full ${activeWeekdays[index] ? "bg-[rgb(39,39,39)] border-[1px] border-black [border-style:inset]" : ""}`}
+=======
+                        key=${index + 'select-weekday'}
+                        className=${`h-[30px] w-[30px] m-1.25 rounded-full ${activeWeekdays[index] ? 'bg-[rgb(39,39,39)] border-[1px] border-black [border-style:inset]' : ''}`}
+>>>>>>> tailwind
                         onClick=${(e) => {
                           e.preventDefault();
                           handleWeekdayClick(index);
@@ -237,16 +306,16 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
             `
           : null}
 
-        <div className="custom-end">
+        <div className="w-full pl-[40px] my-4">
           <span>Ends:</span>
-          <form className="custom-repeat-end" action="">
+          <form className="mt-[10px] w-full flex flex-col" action="">
             <div>
               <input
                 type="radio"
                 id="custom-repeat-never-end"
                 name="repeat-activity-ends"
                 value="never"
-                checked=${ends === "never"}
+                checked=${ends === 'never'}
                 onChange=${handleEndsChange}
               />
               <label htmlFor="custom-repeat-never-end">Never</label>
@@ -258,15 +327,15 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
                 id="custom-repeat-end-date"
                 name="repeat-activity-ends"
                 value="date"
-                checked=${ends === "date"}
+                checked=${ends === 'date'}
                 onChange=${handleEndsChange}
               />
               <label htmlFor="custom-repeat-end-date">On</label>
               <input
-                id="custum-end-date"
                 type="date"
                 onChange=${handleEndDateChange}
                 defaultValue=${endDate
+<<<<<<< HEAD
                   .toLocaleString("sv-SE", {
                     timeZoneName: "short",
                     year: "numeric",
@@ -277,6 +346,18 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
                     second: "2-digit",
                   })
                   .split(" ")[0]}
+=======
+                  .toLocaleString('sv-SE', {
+                    timeZoneName: 'short',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                  })
+                  .split(' ')[0]}
+>>>>>>> tailwind
               />
             </div>
 
@@ -286,13 +367,13 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
                 id="custom-repeat-recurrency-end"
                 name="repeat-activity-ends"
                 value="recurrence"
-                checked=${ends === "recurrence"}
+                checked=${ends === 'recurrence'}
                 onChange=${handleEndsChange}
               />
               <label htmlFor="custom-repeat-recurrency-end">After</label>
 
               <input
-                className="custom-repeat-num-input"
+                className="w-[60px]"
                 id="recurrence-number"
                 type="number"
                 min="1"
@@ -301,7 +382,7 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
                 onKeyDown=${(e) => {
                   if (
                     // only allow integer inputs. no 0 if it is the only int
-                    ["-", "+", "e", "E", ",", "."].includes(e.key) ||
+                    ['-', '+', 'e', 'E', ',', '.'].includes(e.key) ||
                     (e.target.value < 1 && e.key == 0)
                   ) {
                     e.preventDefault();
@@ -313,8 +394,7 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
           </form>
         </div>
         <button
-          id="save-custom-repeat"
-          className="button-square button-save"
+          className="h-[30px] w-[80px] border border-[rgba(128,128,128,0.4)] m-2.5"
           onClick=${(e) => {
             e.preventDefault();
             onSave(handleSaveRepeat());

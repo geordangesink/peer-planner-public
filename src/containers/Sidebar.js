@@ -1,10 +1,10 @@
 import { html } from "htm/react";
 import { useState } from "react";
-import CurrentTime from "../components/CurrentTime/CurrentTime";
-import MonthDaysView from "../components/MonthDaysView/MonthDaysView";
-import PeersView from "../components/PeersView/PeersView";
-import RoomInfo from "../components/RoomInfo/RoomInfo";
-import RoomsList from "../components/RoomsList/RoomsList";
+import CurrentTime from "../components/CurrentTime";
+import MonthDaysView from "../components/MonthDaysView";
+import PeersView from "../components/PeersView";
+import RoomInfo from "../components/RoomInfo";
+import RoomsList from "../components/RoomsList";
 import useSchedule from "../hooks/useSchedule";
 import useIsVisible from "../hooks/useIsVisible";
 
@@ -25,7 +25,7 @@ export default () => {
   };
 
   return html`
-    <nav className="sidebar">
+    <nav className="flex w-[250px] min-w-[250px] bg-sidebar flex-col items-center border-r border-gray-40">
       <${CurrentTime} />
       <${MonthDaysView} />
       <${PeersView} setIsCreate=${setIsCreate} roomInfoComp=${roomInfoComp} />

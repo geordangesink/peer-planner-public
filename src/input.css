@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Variables */
+:root {
+  --title-bar-height: 35px;
+}
+
+/* Custom Scrollbar Styles */
+@layer utilities {
+  ::-webkit-scrollbar {
+    width: var(--scrollbar-width, 8px); /* Default to 8px */
+    height: var(--scrollbar-width, 8px);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(128, 128, 128, 0.4); /* Thumb color */
+    border-radius: 10px; /* Rounded corners */
+  }
+
+  ::-webkit-scrollbar-corner {
+    background-color: transparent; /* Transparent corner */
+  }
+}
+
+/* globals.css */
+@layer components {
+  button {
+    @apply flex cursor-pointer text-white text-center justify-center items-center rounded-[10px] py-[2px] px-[8px];
+  }
+
+  input,
+  textarea,
+  select {
+    @apply rounded-[10px] py-[2px] px-[8px] text-black;
+  }
+
+  form * {
+    @apply rounded-[10px] py-[2px] px-[8px];
+  }
+}

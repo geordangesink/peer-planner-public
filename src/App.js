@@ -7,7 +7,7 @@ import CalendarView from "./containers/CalendarView";
 export default () => {
   return html`
     <${DateProvider}>
-      <div className="container">
+      <div className="flex h-screen w-full">
         <${ScheduleProvider}>
           <${Sidebar} />
           <${CalendarView} />

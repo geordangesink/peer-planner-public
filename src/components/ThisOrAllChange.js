@@ -32,14 +32,26 @@ export default ({
   };
   if (!isVisible) return;
 
-  return html` <div className="popup-overlay" onClick=${handleOverlayClick}>
-    <div className="popup-content" ref=${popupContentRef}>
-      <button className="popup-close" onClick=${onClose}>x</button>
-      <h2>Activities to change:</h2>
-      <form className="form-this-or-all" action="">
+  return html` <div
+    className="fixed inset-0 w-full h-full bg-black/50 flex items-center justify-center z-[1000]"
+    onClick=${handleOverlayClick}
+  >
+    <div
+      className="bg-black border border-gray-400/40 p-5 rounded relative w-[600px] h-[400px] shadow-lg flex flex-col items-center justify-center"
+      ref=${popupContentRef}
+    >
+      <button
+        className="absolute top-[10px] right-[10px] text-[1.5rem] border-none bg-none cursor-pointer text-white"
+        onClick=${onClose}
+      >
+        x
+      </button>
+      <h2 className="mb-5">Activities to change:</h2>
+      <form className="flex flex-col mb-2.5" action="">
         <input
           type="radio"
           id="change-this-activity"
+          className="transform scale-130 text-center m-2.5"
           name="change-activity"
           value="this"
           onChange=${handleRadioChange}
@@ -49,6 +61,7 @@ export default ({
         <input
           type="radio"
           id="change-all-activities"
+          className="transform scale-130 text-center m-2.5"
           name="change-activity"
           value="all"
           onChange=${handleRadioChange}
@@ -59,14 +72,23 @@ export default ({
           ? html`<input
                 type="radio"
                 id="change-all-activities"
+                className="transform scale-130 text-center m-2.5"
                 name="change-activity"
                 value="allFollowing"
                 onChange=${handleRadioChange}
               />
-              <label htmlFor="change-all-activities">All Following Activities</label>`
+              <label className="transform scale-130 text-center m-2.5" htmlFor="change-all-activities"
+                >All Following Activities</label
+              >`
           : ""}
       </form>
-      <button id="save-this-or-all" className="button-square button-save" onClick=${onSave}>Save</button>
+      <button
+        id="save-this-or-all"
+        className="h-[30px] w-[80px] border border-[rgba(128,128,128,0.4)] m-2.5"
+        onClick=${onSave}
+      >
+        Save
+      </button>
     </div>
   </div>`;
 };

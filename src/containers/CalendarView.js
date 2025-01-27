@@ -1,9 +1,9 @@
 import { html } from "htm/react";
 import { useState } from "react";
-import CalendarHeader from "../components/CalendarHeader/CalendarHeader";
-import CalendarInterfaceWeek from "../components/CalendarInterfaceWeek/CalendarInterfaceWeek";
-import ConfigureActivity from "../components/ConfigureActivity/ConfigureActivity";
-import ThisOrAllChange from "../components/ThisOrAllChange/ThisOrAllChange";
+import CalendarHeader from "../components/CalendarHeader";
+import CalendarInterfaceWeek from "../components/CalendarInterfaceWeek";
+import ConfigureActivity from "../components/ConfigureActivity";
+import ThisOrAllChange from "../components/ThisOrAllChange";
 import useIsVisible from "../hooks/useIsVisible";
 import useSchedule from "../hooks/useSchedule";
 import adjustScheduleDrag from "../api/CalendarInterface/weekInterface/adjustScheduleDrag";
@@ -121,7 +121,7 @@ export default () => {
   };
 
   return html`
-    <main className="calendar-view">
+    <main className="w-calendar-view h-full flex-grow p-5 pt-0 pb-2 pr-3 flex flex-col">
       <${CalendarHeader} 
         handleMakeCreateVisible=${configureActivityComp.handleMakeVisible}
       />
@@ -164,7 +164,7 @@ export default () => {
 // WEEK interface
 function getGridLocation(event, dayIndexOffsetPx = false) {
   // get the grid container and its dimensions
-  const gridContainer = document.querySelector(".scheduleActivities");
+  const gridContainer = document.querySelector("#scheduleActivities");
   const gridRect = gridContainer.getBoundingClientRect();
   const columnWidth = gridRect.width / 7; // Width of each day column
   const rowHeight = gridRect.height / 96; // Height of each 15-minute slot
@@ -185,7 +185,6 @@ function getGridLocation(event, dayIndexOffsetPx = false) {
     relativeX,
     columnWidth,
     timeIndex,
-    columnWidth,
     rowHeight,
     gridContainer,
   };
