@@ -16,16 +16,10 @@ export default ({ setIsCreate, roomInfoComp }) => {
       className="flex w-full py-[10px] border-b border-[rgba(128,128,128,0.4)] flex-col justify-center items-center"
     >
       <section className="w-[80%] mb-[5px] flex justify-between">
-<<<<<<< HEAD
-        <button
-          className="w-full h-[30px] border border-solid border-[rgba(128,128,128,0.4)] hover:bg-hoverButton mb-1"
-          onClick=${handleCreateRoom}
-=======
         <${ButtonSquare}
           isActive=${true}
           onClick=${handleCreateRoom}
           className=${'w-full'}
->>>>>>> tailwind
         >
           Join/Create Calendar
         </>

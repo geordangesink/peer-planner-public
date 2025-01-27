@@ -19,7 +19,7 @@ export default ({
     setCurrentCalendarInfo,
   } = useSchedule();
   const [isCreating, setIsCreating] = useState(false);
-  const [inviteKey, setInviteKey] = useState();
+  const [inviteKey, setInviteKey] = useState('');
   const calendarNameRef = useRef();
   const calendarDescriptionRef = useRef();
   const calendarColorRef = useRef();
@@ -32,17 +32,20 @@ export default ({
       description: calendarDescriptionRef.current.value,
     };
     if (isCreate) {
-      if (inviteKey) await joinRoom(info, inviteKey);
-      else await initCalendarRoom({ info });
-
-      // TODO: handle error in case of undifined roomId (wrong invite) better
-      if (!sharedDbObject[roomIdRef.current]) {
-        onClose();
-        setInviteKey('');
-        return;
-      }
-
       setIsCreating(true);
+
+      if (inviteKey) {
+        const room = await joinRoom(info, inviteKey);
+
+        // TODO: handle error in case of undifined roomId (wrong invite) better
+        if (!room) {
+          onClose();
+          setInviteKey('');
+          setIsCreating(false);
+          return;
+        }
+      } else await initCalendarRoom({ info });
+
       setInviteKey('');
       setIsCreate(false);
       setIsCreating(false);
@@ -65,7 +68,8 @@ export default ({
 
   // TODO: handle errors for wrong key
   const joinRoom = async (info, inviteKey) => {
-    await initCalendarRoom({ info, invite: inviteKey });
+    const room = await initCalendarRoom({ info, invite: inviteKey });
+    return room;
   };
 
   if (!isVisible) return null;

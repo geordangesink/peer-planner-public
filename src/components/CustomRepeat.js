@@ -217,14 +217,6 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
             <option value="year">year</option>
           </select>
         </form>
-<<<<<<< HEAD
-        ${selectedTimeframe === "month" // THIS IS COPIED FROM CreateActivity
-          ? html`
-              <form className="repeat-on">
-                <span>Repeat on</span>
-                <select id="repeat" defaultValue=${onEveryMonth} onChange=${(e) => setOnEveryMonth(e.target.value)}>
-                  <option value="monthly">${currentDate.getDate()}. day every Month</option>
-=======
         ${selectedTimeframe === 'month' // THIS IS COPIED FROM CreateActivity
           ? html`
               <form className="repeat-on my-4">
@@ -237,21 +229,12 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
                   <option value="monthly">
                     ${currentDate.getDate()}. day every Month
                   </option>
->>>>>>> tailwind
                   <option value="monthlyNum">
                     Week including ${Math.ceil(currentDate.getDate() / 7)}.
                     ${weekdayAbbreviations[currentDate.getDay()]} of Month
                   </option>
                   ${testNextWeekdayDate.getMonth() !== currentDate.getMonth()
                     ? html`<option value="monthlyLast">
-<<<<<<< HEAD
-                        Week including last ${weekdayAbbreviations[currentDate.getDay()]} of Month
-                      </option>`
-                    : ""}
-                  ${testNextDay.getMonth() !== currentDate.getMonth()
-                    ? html`<option value="monthlyLastDay">last day of Month</option>`
-                    : ""}
-=======
                         Week including last
                         ${weekdayAbbreviations[currentDate.getDay()]} of Month
                       </option>`
@@ -261,37 +244,23 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
                         last day of Month
                       </option>`
                     : ''}
->>>>>>> tailwind
                 </select>
               </form>
             `
           : null}
-<<<<<<< HEAD
-        ${selectedTimeframe === "week" ||
-        (selectedTimeframe === "month" && onEveryMonth === "monthlyLast") ||
-        (selectedTimeframe === "month" && onEveryMonth === "monthlyNum")
-          ? html`
-              <div className="repeat-on-weekday">
-=======
         ${selectedTimeframe === 'week' ||
         (selectedTimeframe === 'month' && onEveryMonth === 'monthlyLast') ||
         (selectedTimeframe === 'month' && onEveryMonth === 'monthlyNum')
           ? html`
               <div className="repeat-on-weekday my-4">
->>>>>>> tailwind
                 <span>Repeat on:</span>
 
                 <div className="flex flex-row">
                   ${weekdays.map(
                     (day, index) => html`
                       <button
-<<<<<<< HEAD
-                        key=${index + "select-weekday"}
-                        className=${`h-[30px] w-[30px] m-1.25 rounded-full ${activeWeekdays[index] ? "bg-[rgb(39,39,39)] border-[1px] border-black [border-style:inset]" : ""}`}
-=======
                         key=${index + 'select-weekday'}
                         className=${`h-[30px] w-[30px] m-1.25 rounded-full ${activeWeekdays[index] ? 'bg-[rgb(39,39,39)] border-[1px] border-black [border-style:inset]' : ''}`}
->>>>>>> tailwind
                         onClick=${(e) => {
                           e.preventDefault();
                           handleWeekdayClick(index);
@@ -335,18 +304,6 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
                 type="date"
                 onChange=${handleEndDateChange}
                 defaultValue=${endDate
-<<<<<<< HEAD
-                  .toLocaleString("sv-SE", {
-                    timeZoneName: "short",
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                  })
-                  .split(" ")[0]}
-=======
                   .toLocaleString('sv-SE', {
                     timeZoneName: 'short',
                     year: 'numeric',
@@ -357,7 +314,6 @@ export default ({ isVisibleInner, onCancel, onSave }) => {
                     second: '2-digit',
                   })
                   .split(' ')[0]}
->>>>>>> tailwind
               />
             </div>
 

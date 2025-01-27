@@ -105,18 +105,6 @@ export default () => {
           ${sidebarMonth.getFullYear()}
         </h4>
         <div className="flex">
-<<<<<<< HEAD
-          <button
-            id="sidebar-month-arrow-left"
-            className="h-[30px] w-[30px] m-1.25 rounded-full hover:bg-hoverButton"
-            onClick=${async () => handleMonthChange(-1)}
-          >
-            <span>${"<"}</span>
-          </button>
-          <button
-            id="sidebar-month-arrow-right"
-            className="h-[30px] w-[30px] m-1.25 rounded-full hover:bg-hoverButton"
-=======
           <${ButtonCircle}
             isActive=${true}
             onClick=${async () => handleMonthChange(-1)}
@@ -125,7 +113,6 @@ export default () => {
           </>
           <${ButtonCircle}
             isActive=${true}
->>>>>>> tailwind
             onClick=${async () => handleMonthChange(1)}
           >
             <span>${'>'}</span>
@@ -149,17 +136,10 @@ export default () => {
         ${displayedMonthDays.map(
           (dayObj) => html`
             <div
-<<<<<<< HEAD
-              key=${dayObj.key + "month-days-day"}
-              className=${`flex h-[24px] w-[24px] m-[3px] rounded-full justify-center items-center hover:bg-[rgb(99,99,99)] cursor-pointer
-                ${dayObj.type === "current" ? "current-day" : "text-gray-500"}
-                ${dayObj.date.toDateString() === new Date(currentDate).toDateString() ? "bg-[rgb(39,39,39)] border-[1px] border-black [border-style:inset]" : dayObj.date.toDateString() === new Date().toDateString() ? "bg-gray-600" : ""}`}
-=======
               key=${dayObj.key + 'month-days-day'}
               className=${`flex h-[24px] w-[24px] m-[3px] rounded-full justify-center items-center hover:bg-[rgb(99,99,99)] cursor-pointer
                 ${dayObj.type === 'current' ? 'current-day' : 'text-gray-500'}
                 ${dayObj.date.toDateString() === new Date(currentDate).toDateString() ? 'bg-[rgb(39,39,39)] border-[1px] border-black [border-style:inset]' : dayObj.date.toDateString() === new Date().toDateString() ? 'bg-gray-600' : ''}`}
->>>>>>> tailwind
               onClick=${() => handleDayClick(dayObj)}
             >
               ${dayObj.day}

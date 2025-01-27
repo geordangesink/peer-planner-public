@@ -14,17 +14,10 @@ export default {
         'calendar-view': 'calc(100vw - 250px)',
       },
       colors: {
-<<<<<<< HEAD
-        sidebar: "#323335",
-        "gray-68": "#444444",
-        "gray-99": "#636363",
-        hoverButton: "#3a3d42",
-=======
         sidebar: '#323335',
         'gray-68': '#444444',
         'gray-99': '#636363',
         hoverButton: '#5e6266',
->>>>>>> tailwind
       },
       borderColor: {
         'gray-40': 'rgba(128, 128, 128, 0.4)',

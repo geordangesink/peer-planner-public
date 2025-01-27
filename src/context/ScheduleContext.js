@@ -1,8 +1,8 @@
 // TODO: use compact encoding for encoding and decoding
-import { html } from "htm/react";
-import { createContext, useEffect, useState, useRef } from "react";
-import { mapToJson, jsonToMap } from "../api/json-map-switch";
-import { RoomManager } from "../api/RoomManager";
+import { html } from 'htm/react';
+import { createContext, useEffect, useState, useRef } from 'react';
+import { mapToJson, jsonToMap } from '../api/json-map-switch';
+import { RoomManager } from '../api/RoomManager';
 
 const ScheduleContext = createContext();
 
@@ -10,13 +10,13 @@ const ScheduleProvider = ({ children }) => {
   const [currentSchedule, setCurrentSchedule] = useState(new Map());
   const [sharedDbObject, setSharedDbObject] = useState(new Object());
   const [currentCalendarInfo, setCurrentCalendarInfo] = useState({
-    name: "My Calendar",
-    color: "#7B0323",
-    description: "Personal Calendar",
+    name: 'My Calendar',
+    color: '#7B0323',
+    description: 'Personal Calendar',
   });
   const db = useRef();
   const roomManagerRef = useRef(new RoomManager());
-  const roomIdRef = useRef("MyCalendar");
+  const roomIdRef = useRef('MyCalendar');
 
   Pear.teardown(async () => {
     await roomManagerRef.current.cleanup();
@@ -31,18 +31,18 @@ const ScheduleProvider = ({ children }) => {
       await roomManagerRef.current.ready();
       const bee = roomManagerRef.current.localBee;
 
-      const result = await bee.get("schedule");
+      const result = await bee.get('schedule');
       if (result && result.value) {
         const scheduleMap = jsonToMap(result.value.toString());
         setCurrentSchedule(scheduleMap);
       } else {
         const newSchedule = new Map();
         setCurrentSchedule(newSchedule);
-        await bee.put("schedule", Buffer.from(mapToJson(newSchedule)));
+        await bee.put('schedule', Buffer.from(mapToJson(newSchedule)));
       }
       db.current = bee;
     } catch (error) {
-      console.error("Error initializing Personal database:", error);
+      console.error('Error initializing Personal database:', error);
     }
   };
 
@@ -51,7 +51,7 @@ const ScheduleProvider = ({ children }) => {
     if (Object.keys(rooms).length) {
       setSharedDbObject(rooms);
     } else {
-      console.log("no shared calendars stored");
+      console.log('no shared calendars stored');
     }
   };
 
@@ -62,13 +62,13 @@ const ScheduleProvider = ({ children }) => {
         ...opts,
         isNew: true,
       });
-      if (!room) return;
+      if (!room) return null;
 
       roomIdRef.current = room.roomId;
       setCurrentCalendarInfo(room.info);
 
       const bee = room.autobee;
-      const scheduleObj = await bee.get("schedule");
+      const scheduleObj = await bee.get('schedule');
 
       let scheduleMap;
       if (scheduleObj && scheduleObj.value) {
@@ -81,7 +81,7 @@ const ScheduleProvider = ({ children }) => {
 
       return room;
     } catch (error) {
-      console.error("Error initializing Shared database:", error);
+      console.error('Error initializing Shared database:', error);
     }
   };
 
@@ -89,26 +89,29 @@ const ScheduleProvider = ({ children }) => {
     setCurrentSchedule(updated);
 
     // update personal schedule
-    if (roomIdRef.current === "MyCalendar") {
+    if (roomIdRef.current === 'MyCalendar') {
       if (db.current && db.current.writable) {
         try {
-          await db.current.put("schedule", Buffer.from(mapToJson(updated)));
+          await db.current.put('schedule', Buffer.from(mapToJson(updated)));
         } catch (err) {
-          console.error("Error updating schedule in personal database:", err);
+          console.error('Error updating schedule in personal database:', err);
         }
       }
     } else {
       // update shared schedule
       //////// NEED TO EDIT
-      if (sharedDbObject[roomIdRef.current] && sharedDbObject[roomIdRef.current].autobee.writable) {
+      if (
+        sharedDbObject[roomIdRef.current] &&
+        sharedDbObject[roomIdRef.current].autobee.writable
+      ) {
         const bee = sharedDbObject[roomIdRef.current].autobee;
         try {
-          await bee.put("schedule", Buffer.from(mapToJson(updated)));
+          await bee.put('schedule', Buffer.from(mapToJson(updated)));
         } catch (err) {
-          console.error("Error updating schedule in shared database:", err);
+          console.error('Error updating schedule in shared database:', err);
         }
       } else {
-        console.error("No room or not writable");
+        console.error('No room or not writable');
       }
     }
   };

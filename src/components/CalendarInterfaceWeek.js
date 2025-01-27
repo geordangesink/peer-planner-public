@@ -210,17 +210,10 @@ export default ({
                     <button
                       key=${`button-date-number-${index}`}
                       id=${`button-date-${index}`}
-<<<<<<< HEAD
-                      className=${`h-[30px] w-[30px] m-1.25 rounded-full mr-[5px]
-                        ${isCurrentMonth ? "" : "text-gray-500"}
-                        ${date.toDateString() === new Date(currentDate).toDateString() ? "bg-[rgb(39,39,39)] border-[1px] border-black [border-style:inset]" : ""}
-                        ${date.toDateString() === new Date().toDateString() ? "bg-gray-800" : ""}`}
-=======
                       className=${`h-[30px] w-[30px] m-1.25 rounded-full mr-[5px] hover:bg-hoverButton
                         ${isCurrentMonth ? '' : 'text-gray-500'}
                         ${date.toDateString() === new Date(currentDate).toDateString() ? 'bg-[rgb(39,39,39)] border-[1px] border-black [border-style:inset]' : ''}
                         ${date.toDateString() === new Date().toDateString() ? 'bg-gray-800' : ''}`}
->>>>>>> tailwind
                       onClick=${() => handleDayClick(date)}
                     >
                       <h3 className="text-[1.3rem]">${date.getDate()}</h3>
@@ -298,13 +291,9 @@ export default ({
             })}
           </div>
           <div className="flex flex-row">
-<<<<<<< HEAD
-            <div className="sticky left-0 h-full text-[0.6rem] text-[rgb(128,128,128)] bg-[#000000] z-[5]">
-=======
             <div
               className="sticky left-0 h-full text-[0.6rem] text-[rgb(128,128,128)] bg-[#000000] z-[5]"
             >
->>>>>>> tailwind
               <!-- Row Labels -->
               ${Array.from({ length: 24 }, (_, index) => {
                 // Create a Date object for each hour of the day
@@ -319,11 +308,7 @@ export default ({
                   <div
                     key=${`row-label-${index}`}
                     className="h-[50px] w-[48px] m-0 p-0 pr-[10px] border-b-[1px] border-r-[1px] border-[rgba(255,255,255,0.4)] last:border-b-0 text-center"
-<<<<<<< HEAD
-                    style=${{ gridTemplateRows: "repeat(24, 1fr)" }}
-=======
                     style=${{ gridTemplateRows: 'repeat(24, 1fr)' }}
->>>>>>> tailwind
                   >
                     ${formattedTime}
                   </div>
@@ -344,11 +329,7 @@ export default ({
                       (_, hour) => html`
                         <div
                           key=${`hour-cell-${dayIndex}-${hour}`}
-<<<<<<< HEAD
-                          className=${`relative h-[50px] bg-black border-b border-b-[rgba(128,128,128,0.4)] border-r border-r-[rgba(128,128,128,0.4)] text-center ${hour === 23 && "border-b-0"} ${dayIndex === 6 && "border-r-0"}`}
-=======
                           className=${`relative h-[50px] bg-black border-b border-b-[rgba(128,128,128,0.4)] border-r border-r-[rgba(128,128,128,0.4)] text-center ${hour === 23 && 'border-b-0'} ${dayIndex === 6 && 'border-r-0'}`}
->>>>>>> tailwind
                         ></div>
                       `
                     )}
