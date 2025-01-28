@@ -1,21 +1,15 @@
 import { html } from 'htm/react';
-import { jsonToMap } from '../api/json-map-switch';
+import { jsonToMap } from '../utils/json-map-switch';
 import useSchedule from '../hooks/useSchedule';
 
 export default ({ roomInfoComp }) => {
-  const {
-    sharedDbObject,
-    roomIdRef,
-    setCurrentSchedule,
-    setCurrentCalendarInfo,
-  } = useSchedule();
+  const { sharedDbObject, roomIdRef, setCurrentSchedule } = useSchedule();
 
   const handleClickRoom = async (roomId, room) => {
     if (roomIdRef.current === roomId) {
       roomInfoComp.handleMakeVisible();
     }
     roomIdRef.current = roomId;
-    setCurrentCalendarInfo(room.info);
 
     // TODO: update dynamically
     const bee = room.autobee;
@@ -49,7 +43,7 @@ export default ({ roomInfoComp }) => {
                 className="flex mr-[5px] flex-col justify-around cursor-pointer"
               >
                 <h5 className="cursor-pointer text-[1.2rem]">
-                  ${room.info.name}
+                  ${room.info.name || 'Unnamed Room'}
                 </h5>
                 <span className="room-description cursor-pointer text-[0.7rem]"
                   >${room.info.description}</span

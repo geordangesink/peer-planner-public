@@ -1,11 +1,11 @@
 import { html } from 'htm/react';
 import { useRef, useMemo } from 'react';
-import ButtonSquare from './ButtonSquare';
-import useDate from '../hooks/useDate';
-import useSchedule from '../hooks/useSchedule';
-import useNewActivityMap from '../hooks/useNewActivityMap';
-import useIsVisible from '../hooks/useIsVisible';
-import CustomRepeat from './CustomRepeat';
+import Button from '../../components/Button';
+import useDate from '../../hooks/useDate';
+import useSchedule from '../../hooks/useSchedule';
+import useNewActivityMap from './useNewActivityMap';
+import useIsVisible from '../../hooks/useIsVisible';
+import CustomRepeat from '../../components/CustomRepeat';
 
 export default ({
   onClose,
@@ -133,7 +133,8 @@ export default ({
         <div className="flex w-full flex-row justify-start">
           ${['Event', 'Task'].map(
             (type) => html`
-              <${ButtonSquare}
+              <${Button}
+              variant=${'square'}
                 key=${`event-task-${type}`}
                 className=${`mb-5 mt-3 mr-3 ${isEvent === (type === 'Event') && 'bg-[rgb(39,39,39)] border-[1px] border-black [border-style:inset]'}`}
                 onClick=${() => setIsEvent(type === 'Event')}
@@ -273,7 +274,8 @@ export default ({
             <option value="1d">1 day before</option>
           </select>
         </form>
-        <${ButtonSquare}
+        <${Button}
+        variant=${'square'}
           className=${'mt-5'}
           onClick=${onSave}
         >

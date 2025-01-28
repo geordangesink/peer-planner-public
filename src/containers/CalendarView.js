@@ -1,12 +1,12 @@
-import { html } from "htm/react";
-import { useState } from "react";
-import CalendarHeader from "../components/CalendarHeader";
-import CalendarInterfaceWeek from "../components/CalendarInterfaceWeek";
-import ConfigureActivity from "../components/ConfigureActivity";
-import ThisOrAllChange from "../components/ThisOrAllChange";
-import useIsVisible from "../hooks/useIsVisible";
-import useSchedule from "../hooks/useSchedule";
-import adjustScheduleDrag from "../api/CalendarInterface/weekInterface/adjustScheduleDrag";
+import { html } from 'htm/react';
+import { useState } from 'react';
+import CalendarHeader from '../components/CalendarHeader';
+import CalendarInterfaceWeek from '../features/week-interface/CalendarInterfaceWeek';
+import ConfigureActivity from '../features/configure-activity/ConfigureActivity';
+import ThisOrAllChange from '../components/ThisOrAllChange';
+import useIsVisible from '../hooks/useIsVisible';
+import useSchedule from '../hooks/useSchedule';
+import adjustScheduleDrag from '../api/CalendarInterface/weekInterface/adjustScheduleDrag';
 
 export default () => {
   const configureActivityComp = useIsVisible();
@@ -15,7 +15,7 @@ export default () => {
   const [tempEventSave, setTempEventSave] = useState(undefined); // when intermediate user input is needed (this or all change)
   const [tempNewScheduleSaved, setTempNewScheduleSaved] = useState({}); // save the edit window config if needed
   const [oldActivityData, setOldActivityData] = useState();
-  const [dragPreviewStyle, setDragPreviewStyle] = useState({ display: "none" });
+  const [dragPreviewStyle, setDragPreviewStyle] = useState({ display: 'none' });
   const [isCreate, setIsCreate] = useState(true);
   const [isDelete, setIsDelete] = useState(false);
   const [isFirstRepeating, setIsFirstRepeating] = useState();
@@ -24,20 +24,24 @@ export default () => {
   const requestScheduleChange = (event = undefined, newSchedule = {}) => {
     const detailsMap = oldActivityData.detailsMap;
 
-    if (detailsMap.get("repeat") === "no-repeat") {
+    if (detailsMap.get('repeat') === 'no-repeat') {
       handleScheduleChange(undefined, event, newSchedule);
     } else {
       // check if the edited activity is the first of the repeating
       if (
         oldActivityData.startTime.getTime() ===
-        currentSchedule.get(oldActivityData.detailsMap.get("repeat")).get(oldActivityData.key).get("from").getTime()
+        currentSchedule
+          .get(oldActivityData.detailsMap.get('repeat'))
+          .get(oldActivityData.key)
+          .get('from')
+          .getTime()
       )
         setIsFirstRepeating(true);
       else setIsFirstRepeating(false);
       setIsDelete(false);
       setTempEventSave(event);
       setTempNewScheduleSaved(newSchedule);
-      setDragPreviewStyle({ display: "none" });
+      setDragPreviewStyle({ display: 'none' });
       thisOrAllChangeComp.handleMakeVisible();
     }
   };
@@ -47,17 +51,23 @@ export default () => {
     const updatedSchedule = new Map(currentSchedule);
     const detailsMap = oldActivityData.detailsMap;
 
-    if (detailsMap.get("repeat") === "no-repeat") {
-      updatedSchedule.get(detailsMap.get("from").toISOString()).delete(oldActivityData.key);
-      if (!updatedSchedule.get(detailsMap.get("from").toISOString()).size)
-        updatedSchedule.delete(detailsMap.get("from").toISOString());
+    if (detailsMap.get('repeat') === 'no-repeat') {
+      updatedSchedule
+        .get(detailsMap.get('from').toISOString())
+        .delete(oldActivityData.key);
+      if (!updatedSchedule.get(detailsMap.get('from').toISOString()).size)
+        updatedSchedule.delete(detailsMap.get('from').toISOString());
 
       setSchedule(updatedSchedule);
     } else {
       // check if the edited activity is the first of the repeating
       if (
         oldActivityData.startTime.getTime() ===
-        currentSchedule.get(oldActivityData.detailsMap.get("repeat")).get(oldActivityData.key).get("from").getTime()
+        currentSchedule
+          .get(oldActivityData.detailsMap.get('repeat'))
+          .get(oldActivityData.key)
+          .get('from')
+          .getTime()
       )
         setIsFirstRepeating(true);
       else setIsFirstRepeating(false);
@@ -66,7 +76,11 @@ export default () => {
     }
   };
 
-  const handleScheduleChange = (ThisOrAllChangeInput = undefined, e = undefined, newS = undefined) => {
+  const handleScheduleChange = (
+    ThisOrAllChangeInput = undefined,
+    e = undefined,
+    newS = undefined
+  ) => {
     const event = e || tempEventSave;
     const newSchedule = newS || tempNewScheduleSaved;
     let dayIndex;
@@ -91,30 +105,30 @@ export default () => {
     setTempNewScheduleSaved({});
     setTempEventSave(undefined);
     setOldActivityData(undefined);
-    setDragPreviewStyle({ display: "none" });
+    setDragPreviewStyle({ display: 'none' });
   };
 
   const handleDeleteRepeatActivity = (ThisOrAllChangeInput = undefined) => {
     const updatedSchedule = new Map(currentSchedule);
     const detailsMap = oldActivityData.detailsMap;
 
-    if (ThisOrAllChangeInput === "all") {
-      updatedSchedule.get(detailsMap.get("repeat")).delete(oldActivityData.key);
-    } else if (ThisOrAllChangeInput === "this") {
+    if (ThisOrAllChangeInput === 'all') {
+      updatedSchedule.get(detailsMap.get('repeat')).delete(oldActivityData.key);
+    } else if (ThisOrAllChangeInput === 'this') {
       const dateExceptionsArr = updatedSchedule
-        .get(detailsMap.get("repeat"))
+        .get(detailsMap.get('repeat'))
         .get(oldActivityData.key)
-        .get("dateExceptions");
+        .get('dateExceptions');
       dateExceptionsArr.push([
         oldActivityData.startTime.toISOString(),
         oldActivityData.endTime.toISOString(),
-        "deleted",
+        'deleted',
       ]);
-    } else if (ThisOrAllChangeInput === "allFollowing") {
+    } else if (ThisOrAllChangeInput === 'allFollowing') {
       updatedSchedule
-        .get(detailsMap.get("repeat"))
+        .get(detailsMap.get('repeat'))
         .get(oldActivityData.key)
-        .set("endRepeat", new Date(oldActivityData.startTime.toDateString()));
+        .set('endRepeat', new Date(oldActivityData.startTime.toDateString()));
     }
     setOldActivityData(undefined);
     setSchedule(updatedSchedule);
@@ -164,7 +178,7 @@ export default () => {
 // WEEK interface
 function getGridLocation(event, dayIndexOffsetPx = false) {
   // get the grid container and its dimensions
-  const gridContainer = document.querySelector("#scheduleActivities");
+  const gridContainer = document.querySelector('#scheduleActivities');
   const gridRect = gridContainer.getBoundingClientRect();
   const columnWidth = gridRect.width / 7; // Width of each day column
   const rowHeight = gridRect.height / 96; // Height of each 15-minute slot

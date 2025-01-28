@@ -1,7 +1,8 @@
 import { html } from 'htm/react';
 import { useState, useEffect } from 'react';
 import useDate from '../hooks/useDate';
-import ButtonCircle from './ButtonCircle';
+import Button from './Button';
+import NavigationButtonGroup from './NavigationButtonGroup';
 
 // displayed month quick-pick
 export default () => {
@@ -104,20 +105,10 @@ export default () => {
           ${sidebarMonth.toLocaleString('default', { month: 'long' })}${' '}
           ${sidebarMonth.getFullYear()}
         </h4>
-        <div className="flex">
-          <${ButtonCircle}
-            isActive=${true}
-            onClick=${async () => handleMonthChange(-1)}
-          >
-            <span>${'<'}</span>
-          </>
-          <${ButtonCircle}
-            isActive=${true}
-            onClick=${async () => handleMonthChange(1)}
-          >
-            <span>${'>'}</span>
-          </>
-        </div>
+        <${NavigationButtonGroup}
+          onLeftClick=${() => handleMonthChange(-1)}
+          onRightClick=${() => handleMonthChange(1)}
+        />
       </div>
       <div
         className="grid mb-[10px] grid-rows-[repeat(7,_1fr)] grid-cols-[repeat(7,_1fr)] text-[0.7rem]"

@@ -1,18 +1,20 @@
-export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates) {
+// Logic for displaying the activities on week layout accordingly
+
+export default function (currentSchedule, displayedDates) {
   // initialize array as [key, value] for all activities
   const allActivities = Array.from(currentSchedule.entries());
 
   // set up repeating activity frequencies
   const repeatingFrequencyArr = [
-    "daily",
-    "weekdays",
-    "weekly",
-    "monthly",
-    "monthlyNum",
-    "monthlyLast",
-    "monthlyLastDay",
-    "annually",
-    "custom",
+    'daily',
+    'weekdays',
+    'weekly',
+    'monthly',
+    'monthlyNum',
+    'monthlyLast',
+    'monthlyLastDay',
+    'annually',
+    'custom',
   ];
 
   // function to push repeating events to allActivities Array as individualy displayed activities
@@ -25,29 +27,32 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
       .forEach(([key, activityMapSaved]) => {
         // for each entry in frequency
 
-        const exceptions = [...activityMapSaved.get("dateExceptions")]; // get exceptions
-        const activityFromDate = new Date(activityMapSaved.get("from"));
-        const customDetails = activityMapSaved.get("customRepeat"); // details of custom repeat, saved as object
-        const endRepeat = activityMapSaved.get("endRepeat");
+        const exceptions = [...activityMapSaved.get('dateExceptions')]; // get exceptions
+        const activityFromDate = new Date(activityMapSaved.get('from'));
+        const customDetails = activityMapSaved.get('customRepeat'); // details of custom repeat, saved as object
+        const endRepeat = activityMapSaved.get('endRepeat');
         let datesToAdd = displayedDates;
 
         // switch cases for every repeating frequency (filter datesToAdd and chekOverlap)
         switch (frequency) {
-          case "daily":
+          case 'daily':
             // add last day of week before in case of overlap (running over midnight)
             const lastDayLastWeek = new Date(displayedDates[0]);
             lastDayLastWeek.setDate(lastDayLastWeek.getDate() - 1);
 
             datesToAdd = datesToAdd.map((date) => {
               const day = new Date(date);
-              day.setHours(activityFromDate.getHours(), activityFromDate.getMinutes());
+              day.setHours(
+                activityFromDate.getHours(),
+                activityFromDate.getMinutes()
+              );
 
               return day;
             });
             datesToAdd.push(lastDayLastWeek);
             break;
 
-          case "weekdays":
+          case 'weekdays':
             datesToAdd = datesToAdd.filter(
               (date) =>
                 date.getDay() !== 0 && //sunday
@@ -56,9 +61,11 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
 
             break;
 
-          case "weekly":
+          case 'weekly':
             // filter this week
-            datesToAdd = datesToAdd.filter((date) => date.getDay() === activityFromDate.getDay());
+            datesToAdd = datesToAdd.filter(
+              (date) => date.getDay() === activityFromDate.getDay()
+            );
             // add last week
             const prevWeekDay = new Date(displayedDates[0]);
             prevWeekDay.setDate(prevWeekDay.getDate() - 7);
@@ -68,7 +75,7 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
 
             datesToAdd.push(prevWeekDay, nextWeekDay);
             break;
-          case "monthly":
+          case 'monthly':
             datesToAdd = [];
             // add current month
             const currentMonthDay = new Date(activityFromDate);
@@ -82,13 +89,16 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
             nextMonthDay.setMonth(displayedDates[0].getMonth() + 1);
 
             // check if same date and push
-            if (prevMonthDay.getDate() === activityFromDate.getDate()) datesToAdd.push(prevMonthDay);
-            if (currentMonthDay.getDate() === activityFromDate.getDate()) datesToAdd.push(currentMonthDay);
-            if (nextMonthDay.getDate() === activityFromDate.getDate()) datesToAdd.push(nextMonthDay);
+            if (prevMonthDay.getDate() === activityFromDate.getDate())
+              datesToAdd.push(prevMonthDay);
+            if (currentMonthDay.getDate() === activityFromDate.getDate())
+              datesToAdd.push(currentMonthDay);
+            if (nextMonthDay.getDate() === activityFromDate.getDate())
+              datesToAdd.push(nextMonthDay);
 
             break;
 
-          case "monthlyNum": // the n'th (selected) weekday of the month
+          case 'monthlyNum': // the n'th (selected) weekday of the month
             datesToAdd = [];
 
             const weekdayInMonthPlusN = (n) => {
@@ -107,32 +117,46 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
                 nthWeekday.getDate() + (dayDiff >= 0 ? dayDiff : 7 + dayDiff) // the first accurance of the weekday
               );
               // move to the n-th occurrence of that weekday
-              const occurrenceInMonth = Math.ceil(activityFromDate.getDate() / 7);
-              nthWeekday.setDate(nthWeekday.getDate() + (occurrenceInMonth - 1) * 7);
+              const occurrenceInMonth = Math.ceil(
+                activityFromDate.getDate() / 7
+              );
+              nthWeekday.setDate(
+                nthWeekday.getDate() + (occurrenceInMonth - 1) * 7
+              );
               // check if its still the same month, if not, dont display
-              if (nthWeekday.getMonth() === (displayedDates[0].getMonth() + n) % 12) datesToAdd.push(nthWeekday);
+              if (
+                nthWeekday.getMonth() ===
+                (displayedDates[0].getMonth() + n) % 12
+              )
+                datesToAdd.push(nthWeekday);
             };
             weekdayInMonthPlusN(-1); // before
             weekdayInMonthPlusN(0); // current
             weekdayInMonthPlusN(1); // after
             break;
 
-          case "monthlyLast": // the last (selected) weekday of the month
+          case 'monthlyLast': // the last (selected) weekday of the month
             // Reference day from activityFromDate
             const referenceDay = activityFromDate.getDay();
 
             // Last occurrence in the current month
-            const currentMonthLast = getLastDayOfWeekInMonth(referenceDay, displayedDates[0]);
+            const currentMonthLast = getLastDayOfWeekInMonth(
+              referenceDay,
+              displayedDates[0]
+            );
 
             // Last occurrence in the previous month
             const prevMonthDate = new Date(displayedDates[0]);
             prevMonthDate.setMonth(displayedDates[0].getMonth() - 1);
-            const prevMonthLast = getLastDayOfWeekInMonth(referenceDay, prevMonthDate);
+            const prevMonthLast = getLastDayOfWeekInMonth(
+              referenceDay,
+              prevMonthDate
+            );
 
             datesToAdd = [prevMonthLast, currentMonthLast];
             break;
 
-          case "monthlyLastDay": // the last day of the month
+          case 'monthlyLastDay': // the last day of the month
             const monthLastDay = new Date(displayedDates[0]);
             monthLastDay.setDate(1); // in case of nex month having lest days and skipping one
             monthLastDay.setMonth(monthLastDay.getMonth() + 1);
@@ -150,7 +174,7 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
 
             break;
 
-          case "annually":
+          case 'annually':
             const annually = new Date(activityFromDate);
             annually.setFullYear(displayedDates[0].getFullYear());
 
@@ -165,39 +189,49 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
             break;
 
           // case for all custom repeat settings
-          case "custom":
+          case 'custom':
             const increment = customDetails.everyNum; // integer increment as to when it repeats in respect to the timeframe (day, week, month ...ect)
             // filter for end recurrence
             const isBeforeLastRecurrence = (diff) => {
               let beforeLastRecurrance = true;
-              if (customDetails.ends.type === "recurrence") {
+              if (customDetails.ends.type === 'recurrence') {
                 beforeLastRecurrance = Math.abs(diff) / increment < endRepeat;
               }
               return beforeLastRecurrance;
             };
 
             switch (customDetails.everyTimeframe) {
-              case "day":
+              case 'day':
                 datesToAdd = datesToAdd.filter((displayedDate) => {
                   const oneDayInMs = 24 * 60 * 60 * 1000; // Milliseconds in one day
-                  const diffInDays = Math.floor((activityFromDate - displayedDate) / oneDayInMs);
+                  const diffInDays = Math.floor(
+                    (activityFromDate - displayedDate) / oneDayInMs
+                  );
 
-                  return Math.abs(diffInDays) % increment === 0 && isBeforeLastRecurrence(diffInDays);
+                  return (
+                    Math.abs(diffInDays) % increment === 0 &&
+                    isBeforeLastRecurrence(diffInDays)
+                  );
                 });
                 break;
 
-              case "week":
+              case 'week':
                 datesToAdd = datesToAdd.filter((displayedDate) => {
                   const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
 
                   // normalize to midnight to avoid time discrepancies (displazDate already is)
-                  const normalizedActivityFromDate = normalizeToMidnight(activityFromDate);
+                  const normalizedActivityFromDate =
+                    normalizeToMidnight(activityFromDate);
                   // set to beginning of week (incase from date is not)
                   normalizedActivityFromDate.setDate(
-                    normalizedActivityFromDate.getDate() - normalizedActivityFromDate.getDay() - 0 // 0 for sunday start 1 for monday (i think)
+                    normalizedActivityFromDate.getDate() -
+                      normalizedActivityFromDate.getDay() -
+                      0 // 0 for sunday start 1 for monday (i think)
                   );
 
-                  const diffInWeeks = Math.floor((displayedDate - normalizedActivityFromDate) / oneWeekInMs);
+                  const diffInWeeks = Math.floor(
+                    (displayedDate - normalizedActivityFromDate) / oneWeekInMs
+                  );
 
                   return (
                     customDetails.onEvery.includes(displayedDate.getDay()) &&
@@ -208,27 +242,36 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
                 break;
 
               // all different month setting within the custom repeat
-              case "month":
+              case 'month':
                 const isMonthIncrement = (displayedDate) => {
                   // normalize both dates to avoid time discrepancies
-                  const normalizedActivityFromDate = normalizeToMidnight(activityFromDate);
+                  const normalizedActivityFromDate =
+                    normalizeToMidnight(activityFromDate);
 
                   // calculate the difference in years and months
-                  const diffInYears = displayedDate.getFullYear() - normalizedActivityFromDate.getFullYear();
+                  const diffInYears =
+                    displayedDate.getFullYear() -
+                    normalizedActivityFromDate.getFullYear();
                   const diffInMonths =
-                    diffInYears * 12 + (displayedDate.getMonth() - normalizedActivityFromDate.getMonth());
+                    diffInYears * 12 +
+                    (displayedDate.getMonth() -
+                      normalizedActivityFromDate.getMonth());
 
                   // check if the difference in months is a multiple of the increment and if it is same date
-                  return diffInMonths % increment === 0 && isBeforeLastRecurrence(diffInMonths);
+                  return (
+                    diffInMonths % increment === 0 &&
+                    isBeforeLastRecurrence(diffInMonths)
+                  );
                 };
                 switch (customDetails.monthSpec) {
-                  case "monthly":
+                  case 'monthly':
                     datesToAdd = datesToAdd.filter(
-                      (displayedDate) => displayedDate.getDate() === activityFromDate.getDate()
+                      (displayedDate) =>
+                        displayedDate.getDate() === activityFromDate.getDate()
                     );
                     break;
 
-                  case "monthlyNum":
+                  case 'monthlyNum':
                     datesToAdd = [];
                     // TODO: optimize
                     ////// REPETTATIVE
@@ -242,17 +285,25 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
                         activityFromDate.getMinutes()
                       );
                       // diff in weekday
-                      const dayDiff = activityFromDate.getDay() - nthWeekday.getDay();
+                      const dayDiff =
+                        activityFromDate.getDay() - nthWeekday.getDay();
 
                       nthWeekday.setDate(
-                        nthWeekday.getDate() + (dayDiff >= 0 ? dayDiff : 7 + dayDiff) // the first accurance of the weekday
+                        nthWeekday.getDate() +
+                          (dayDiff >= 0 ? dayDiff : 7 + dayDiff) // the first accurance of the weekday
                       );
                       // move to the n-th occurrence of that weekday
-                      const occurrenceInMonth = Math.ceil(activityFromDate.getDate() / 7);
-                      nthWeekday.setDate(nthWeekday.getDate() + (occurrenceInMonth - 1) * 7);
+                      const occurrenceInMonth = Math.ceil(
+                        activityFromDate.getDate() / 7
+                      );
+                      nthWeekday.setDate(
+                        nthWeekday.getDate() + (occurrenceInMonth - 1) * 7
+                      );
 
                       // set day to 0 (sunday)
-                      nthWeekday.setDate(nthWeekday.getDate() - nthWeekday.getDay());
+                      nthWeekday.setDate(
+                        nthWeekday.getDate() - nthWeekday.getDay()
+                      );
                       // add every weekday
                       for (var i = 0; i < customDetails.onEvery.length; i++) {
                         const date = new Date(nthWeekday);
@@ -260,8 +311,10 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
 
                         // check if its still the same month, if not, dont display... Also do not display any if fromDate weekday is not in this month anymore
                         if (
-                          nthWeekday.getMonth() === (displayedDates[0].getMonth() + n) % 12 &&
-                          date.getMonth() === (displayedDates[0].getMonth() + n) % 12
+                          nthWeekday.getMonth() ===
+                            (displayedDates[0].getMonth() + n) % 12 &&
+                          date.getMonth() ===
+                            (displayedDates[0].getMonth() + n) % 12
                         ) {
                           datesToAdd.push(date);
                         }
@@ -270,12 +323,17 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
                     weekdayInMonthPlusN(0); // current
                     break;
 
-                  case "monthlyLast":
+                  case 'monthlyLast':
                     // Last occurrence in the current month
-                    const currentMonthLast = getLastDayOfWeekInMonth(referenceDay, displayedDates[0]);
+                    const currentMonthLast = getLastDayOfWeekInMonth(
+                      referenceDay,
+                      displayedDates[0]
+                    );
 
                     // set day to 0 (sunday)
-                    currentMonthLast.setDate(currentMonthLast.getDate() - currentMonthLast.getDay());
+                    currentMonthLast.setDate(
+                      currentMonthLast.getDate() - currentMonthLast.getDay()
+                    );
                     // add every weekday
                     for (var i = 0; i < customDetails.onEvery.length; i++) {
                       const date = new Date(currentMonthLast);
@@ -283,15 +341,17 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
 
                       // check if its still the same month, if not, dont display... Also do not display any if fromDate weekday is not in this month anymore
                       if (
-                        currentMonthLast.getMonth() === (displayedDates[0].getMonth() + n) % 12 &&
-                        date.getMonth() === (displayedDates[0].getMonth() + n) % 12
+                        currentMonthLast.getMonth() ===
+                          (displayedDates[0].getMonth() + n) % 12 &&
+                        date.getMonth() ===
+                          (displayedDates[0].getMonth() + n) % 12
                       ) {
                         datesToAdd.push(date);
                       }
                     }
                     break;
 
-                  case "monthlyLastDay":
+                  case 'monthlyLastDay':
                     datesToAdd = [];
                     const monthLastDay = new Date(displayedDates[0]);
                     monthLastDay.setDate(1); // in case next month has less days and will be double skipped
@@ -304,13 +364,17 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
 
                 // filter custom month repeats for increments
                 if (datesToAdd) {
-                  datesToAdd = datesToAdd.filter((displayedDate) => isMonthIncrement(displayedDate));
+                  datesToAdd = datesToAdd.filter((displayedDate) =>
+                    isMonthIncrement(displayedDate)
+                  );
                 }
                 break;
 
-              case "year":
+              case 'year':
                 datesToAdd = datesToAdd.filter((displayedDate) => {
-                  const diffInYears = Math.floor(activityFromDate.getFullYear() - displayedDate.getFullYear());
+                  const diffInYears = Math.floor(
+                    activityFromDate.getFullYear() - displayedDate.getFullYear()
+                  );
                   return (
                     Math.abs(diffInYears) % increment === 0 &&
                     displayedDate.getMonth() === activityFromDate.getMonth() &&
@@ -321,7 +385,9 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
                 break;
 
               default:
-                console.error(`invalid custom repetead timeframe: ${customDetails.everyTimeframe}`);
+                console.error(
+                  `invalid custom repetead timeframe: ${customDetails.everyTimeframe}`
+                );
                 break;
             }
 
@@ -334,7 +400,10 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
             return;
         }
 
-        if (endRepeat !== "never" && (!customDetails.ends || customDetails.ends.type !== "recurrence")) {
+        if (
+          endRepeat !== 'never' &&
+          (!customDetails.ends || customDetails.ends.type !== 'recurrence')
+        ) {
           datesToAdd = datesToAdd.filter((date) => date < endRepeat);
         }
         // filter out days after activity from date (compared midnight)
@@ -357,28 +426,30 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
             })
           ) {
             // create displaying dates with specefied time
-            const startDay = new Date(activityMap.get("from").toDateString());
-            const endDay = new Date(activityMap.get("until").toDateString());
+            const startDay = new Date(activityMap.get('from').toDateString());
+            const endDay = new Date(activityMap.get('until').toDateString());
             // get the timespan (for if activity spans over multiple days)
-            const dayOccurrences = Math.abs(startDay.getTime() - endDay.getTime()) / (1000 * 60 * 60 * 24);
+            const dayOccurrences =
+              Math.abs(startDay.getTime() - endDay.getTime()) /
+              (1000 * 60 * 60 * 24);
 
             const newFromDate = new Date(
               currentDateToAdd.getFullYear(),
               currentDateToAdd.getMonth(),
               currentDateToAdd.getDate(),
-              activityMap.get("from").getHours(),
-              activityMap.get("from").getMinutes()
+              activityMap.get('from').getHours(),
+              activityMap.get('from').getMinutes()
             );
 
             const newUntilDate = new Date(
               currentDateToAdd.getFullYear(),
               currentDateToAdd.getMonth(),
               currentDateToAdd.getDate() + dayOccurrences,
-              activityMap.get("until").getHours(),
-              activityMap.get("until").getMinutes()
+              activityMap.get('until').getHours(),
+              activityMap.get('until').getMinutes()
             );
-            activityMap.set("from", newFromDate);
-            activityMap.set("until", newUntilDate);
+            activityMap.set('from', newFromDate);
+            activityMap.set('until', newUntilDate);
             let activityMapKey = new Map([[key, activityMap]]);
             let activityArray = [datesToAdd[i].toISOString(), activityMapKey];
 
@@ -390,7 +461,9 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
   };
 
   // adds individal activities (for each activity per repeating) as [date, activityMap]
-  repeatingFrequencyArr.forEach((frequency) => pushRepeatingToAllActivities(frequency));
+  repeatingFrequencyArr.forEach((frequency) =>
+    pushRepeatingToAllActivities(frequency)
+  );
 
   // check if activities span over more than one day
   const activitiesSplitToDays = new Array();
@@ -402,8 +475,8 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
       const activity = {
         key,
         date,
-        startTime: activityKey.get("from"),
-        endTime: activityKey.get("until"),
+        startTime: activityKey.get('from'),
+        endTime: activityKey.get('until'),
         detailsMap: activityKey,
       };
       // only change startTime endTime and date, to display differently in UI
@@ -415,15 +488,25 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
         ) + 1;
       // if longer than 24h
       if ((activity.endTime - activity.startTime) / (24 * 60 * 60 * 1000) > 1) {
-        if (endDate < displayedDates[0] || startDate > displayedDates[6]) return;
+        if (endDate < displayedDates[0] || startDate > displayedDates[6])
+          return;
         const startInThisWeek =
-          displayedDates[0] <= startDate && startDate <= displayedDates[6] ? startDate : displayedDates[0];
+          displayedDates[0] <= startDate && startDate <= displayedDates[6]
+            ? startDate
+            : displayedDates[0];
         const endInThisWeek =
-          displayedDates[0] <= endDate && endDate <= displayedDates[6] ? endDate : displayedDates[6];
-        const timeSpanInThisWeek = (endInThisWeek - startInThisWeek) / (24 * 60 * 60 * 1000) + 1;
+          displayedDates[0] <= endDate && endDate <= displayedDates[6]
+            ? endDate
+            : displayedDates[6];
+        const timeSpanInThisWeek =
+          (endInThisWeek - startInThisWeek) / (24 * 60 * 60 * 1000) + 1;
         // for every day before timespan
-        for (var i = 0; i < startInThisWeek.getDay() - displayedDates[0].getDay(); i++) {
-          multiDayActivities[i].push("place-holder");
+        for (
+          var i = 0;
+          i < startInThisWeek.getDay() - displayedDates[0].getDay();
+          i++
+        ) {
+          multiDayActivities[i].push('place-holder');
         }
 
         // for every day within the timespan
@@ -433,7 +516,7 @@ export function weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates
 
         // for every day after timespan
         for (var i = endInThisWeek.getDay() + 1; i < 7; i++) {
-          multiDayActivities[i].push("place-holder");
+          multiDayActivities[i].push('place-holder');
         }
       } // if less than 24h
       else if (timespanInDays > 1) {
@@ -517,7 +600,9 @@ function getLastDayOfWeekInMonth(referenceDay, monthDate) {
   const dayDiff = lastDayOfMonth.getDay() - referenceDay;
 
   // Adjust the last day to get the correct last occurrence of the reference day
-  lastDayOfMonth.setDate(lastDayOfMonth.getDate() - (dayDiff < 0 ? 7 + dayDiff : dayDiff));
+  lastDayOfMonth.setDate(
+    lastDayOfMonth.getDate() - (dayDiff < 0 ? 7 + dayDiff : dayDiff)
+  );
 
   return lastDayOfMonth;
 }

@@ -1,12 +1,12 @@
-import { html } from "htm/react";
-import { useState } from "react";
-import CurrentTime from "../components/CurrentTime";
-import MonthDaysView from "../components/MonthDaysView";
-import PeersView from "../components/PeersView";
-import RoomInfo from "../components/RoomInfo";
-import RoomsList from "../components/RoomsList";
-import useSchedule from "../hooks/useSchedule";
-import useIsVisible from "../hooks/useIsVisible";
+import { html } from 'htm/react';
+import { useState } from 'react';
+import CurrentDate from '../components/CurrentDate';
+import MonthDaysView from '../components/MonthDaysView';
+import PeersView from '../components/PeersView';
+import RoomInfo from '../features/room-info/RoomInfo';
+import RoomsList from '../components/RoomsList';
+import useSchedule from '../hooks/useSchedule';
+import useIsVisible from '../hooks/useIsVisible';
 
 export default () => {
   const roomInfoComp = useIsVisible();
@@ -25,8 +25,10 @@ export default () => {
   };
 
   return html`
-    <nav className="flex w-[250px] min-w-[250px] bg-sidebar flex-col items-center border-r border-gray-40">
-      <${CurrentTime} />
+    <nav
+      className="flex w-[250px] min-w-[250px] bg-sidebar flex-col items-center border-r border-gray-40"
+    >
+      <${CurrentDate} />
       <${MonthDaysView} />
       <${PeersView} setIsCreate=${setIsCreate} roomInfoComp=${roomInfoComp} />
       <${RoomInfo}

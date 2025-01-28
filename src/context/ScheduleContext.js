@@ -1,19 +1,14 @@
 // TODO: use compact encoding for encoding and decoding
 import { html } from 'htm/react';
 import { createContext, useEffect, useState, useRef } from 'react';
-import { mapToJson, jsonToMap } from '../api/json-map-switch';
-import { RoomManager } from '../api/RoomManager';
+import { mapToJson, jsonToMap } from '../utils/json-map-switch';
+import { RoomManager } from '../lib/RoomManager';
 
 const ScheduleContext = createContext();
 
 const ScheduleProvider = ({ children }) => {
   const [currentSchedule, setCurrentSchedule] = useState(new Map());
   const [sharedDbObject, setSharedDbObject] = useState(new Object());
-  const [currentCalendarInfo, setCurrentCalendarInfo] = useState({
-    name: 'My Calendar',
-    color: '#7B0323',
-    description: 'Personal Calendar',
-  });
   const db = useRef();
   const roomManagerRef = useRef(new RoomManager());
   const roomIdRef = useRef('MyCalendar');
@@ -65,7 +60,6 @@ const ScheduleProvider = ({ children }) => {
       if (!room) return null;
 
       roomIdRef.current = room.roomId;
-      setCurrentCalendarInfo(room.info);
 
       const bee = room.autobee;
       const scheduleObj = await bee.get('schedule');
@@ -122,10 +116,8 @@ const ScheduleProvider = ({ children }) => {
         db,
         roomManagerRef,
         roomIdRef,
-        currentCalendarInfo,
         currentSchedule,
         sharedDbObject,
-        setCurrentCalendarInfo,
         setCurrentSchedule,
         setSchedule,
         initCalendarRoom,

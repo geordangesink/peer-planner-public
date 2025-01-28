@@ -1,9 +1,9 @@
 // FIX-BUG: activities sometimes lag behind when switching pages of week
-import { weekInterfaceActivitiesToDisplay } from '../api/CalendarInterface/weekInterface/interfaceActivitiesToDisplay';
+import interfaceActivitiesToDisplay from './interfaceActivitiesToDisplay';
 import { html } from 'htm/react';
 import { useEffect, useState } from 'react';
-import useDate from '../hooks/useDate';
-import useSchedule from '../hooks/useSchedule';
+import useDate from '../../hooks/useDate';
+import useSchedule from '../../hooks/useSchedule';
 
 export default ({
   getGridLocation,
@@ -41,7 +41,7 @@ export default ({
     if (!currentSchedule || displayedDates.length === 0) return;
     // array of objects with information about every activity UI box (multi-day, repeating, overlapping from last week ... ect.)
     const { filteredActivities, multiDayActivities } =
-      weekInterfaceActivitiesToDisplay(currentSchedule, displayedDates);
+      interfaceActivitiesToDisplay(currentSchedule, displayedDates);
 
     setActivitiesForCurrentWeek(filteredActivities);
     setActivitiesMultiday(multiDayActivities);

@@ -1,6 +1,4 @@
-*,
-::before,
-::after {
+*, ::before, ::after {
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
   --tw-translate-x: 0;
@@ -154,7 +152,7 @@ html,
   -moz-tab-size: 4;
   /* 3 */
   -o-tab-size: 4;
-  tab-size: 4;
+     tab-size: 4;
   /* 3 */
   font-family: Arial, sans-serif;
   /* 4 */
@@ -199,7 +197,7 @@ Add the correct text decoration in Chrome, Edge, and Safari.
 
 abbr:where([title]) {
   -webkit-text-decoration: underline dotted;
-  text-decoration: underline dotted;
+          text-decoration: underline dotted;
 }
 
 /*
@@ -245,8 +243,7 @@ code,
 kbd,
 samp,
 pre {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    'Liberation Mono', 'Courier New', monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   /* 1 */
   font-feature-settings: normal;
   /* 2 */
@@ -489,8 +486,7 @@ textarea {
 2. Set the default placeholder color to the user's configured gray 400 color.
 */
 
-input::-moz-placeholder,
-textarea::-moz-placeholder {
+input::-moz-placeholder, textarea::-moz-placeholder {
   opacity: 1;
   /* 1 */
   color: #9ca3af;
@@ -510,7 +506,7 @@ Set the default cursor for buttons.
 */
 
 button,
-[role='button'] {
+[role="button"] {
   cursor: pointer;
 }
 
@@ -554,7 +550,7 @@ video {
 
 /* Make elements with the HTML hidden attribute stay hidden by default */
 
-[hidden]:where(:not([hidden='until-found'])) {
+[hidden]:where(:not([hidden="until-found"])) {
   display: none;
 }
 
@@ -588,8 +584,8 @@ button {
 }
 
 input,
-textarea,
-select {
+  textarea,
+  select {
   border-radius: 10px;
   padding-top: 2px;
   padding-bottom: 2px;
@@ -653,6 +649,14 @@ form * {
 
 .top-\[10px\] {
   top: 10px;
+}
+
+.right-3 {
+  right: 0.75rem;
+}
+
+.top-3 {
+  top: 0.75rem;
 }
 
 .z-\[1000\] {
@@ -785,10 +789,6 @@ form * {
   margin-top: 5px;
 }
 
-.mb-3 {
-  margin-bottom: 0.75rem;
-}
-
 .block {
   display: block;
 }
@@ -857,16 +857,16 @@ form * {
   height: var(--title-bar-height);
 }
 
-.h-\[25px\] {
-  height: 25px;
-}
-
 .min-h-screen {
   min-height: 100vh;
 }
 
 .w-\[180px\] {
   width: 180px;
+}
+
+.w-\[200px\] {
+  width: 200px;
 }
 
 .w-\[224px\] {
@@ -933,12 +933,8 @@ form * {
   width: 100%;
 }
 
-.w-\[20px\] {
-  width: 20px;
-}
-
-.w-\[200px\] {
-  width: 200px;
+.w-4\/5 {
+  width: 80%;
 }
 
 .min-w-\[100px\] {
@@ -958,9 +954,7 @@ form * {
 }
 
 .transform {
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y))
-    rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y))
-    scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .cursor-default {
@@ -1047,6 +1041,12 @@ form * {
   margin-bottom: calc(10px * var(--tw-space-y-reverse));
 }
 
+.space-y-3 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.75rem * var(--tw-space-y-reverse));
+}
+
 .overflow-auto {
   overflow: auto;
 }
@@ -1121,18 +1121,6 @@ form * {
   border-right-width: 1px;
 }
 
-.border-b-0 {
-  border-bottom-width: 0px;
-}
-
-.border-r-0 {
-  border-right-width: 0px;
-}
-
-.border-solid {
-  border-style: solid;
-}
-
 .border-dashed {
   border-style: dashed;
 }
@@ -1142,11 +1130,11 @@ form * {
 }
 
 .border-\[rgba\(128\2c 128\2c 128\2c 0\.4\)\] {
-  border-color: rgba(128, 128, 128, 0.4);
+  border-color: rgba(128,128,128,0.4);
 }
 
 .border-\[rgba\(255\2c 255\2c 255\2c 0\.4\)\] {
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255,255,255,0.4);
 }
 
 .border-black {
@@ -1166,17 +1154,12 @@ form * {
   border-color: rgb(107 114 128 / 0.2);
 }
 
-.border-white {
-  --tw-border-opacity: 1;
-  border-color: rgb(255 255 255 / var(--tw-border-opacity, 1));
-}
-
 .border-b-\[rgba\(128\2c 128\2c 128\2c 0\.4\)\] {
-  border-bottom-color: rgba(128, 128, 128, 0.4);
+  border-bottom-color: rgba(128,128,128,0.4);
 }
 
 .border-r-\[rgba\(128\2c 128\2c 128\2c 0\.4\)\] {
-  border-right-color: rgba(128, 128, 128, 0.4);
+  border-right-color: rgba(128,128,128,0.4);
 }
 
 .bg-\[\#000000\] {
@@ -1200,7 +1183,7 @@ form * {
 }
 
 .bg-\[rgba\(128\2c 128\2c 128\2c 0\.8\)\] {
-  background-color: rgba(128, 128, 128, 0.8);
+  background-color: rgba(128,128,128,0.8);
 }
 
 .bg-black {
@@ -1227,26 +1210,6 @@ form * {
   background-color: rgb(50 51 53 / var(--tw-bg-opacity, 1));
 }
 
-.bg-gray-100 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(243 244 246 / var(--tw-bg-opacity, 1));
-}
-
-.bg-gray-400 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(156 163 175 / var(--tw-bg-opacity, 1));
-}
-
-.bg-gray-600 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(75 85 99 / var(--tw-bg-opacity, 1));
-}
-
-.bg-gray-800 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(31 41 55 / var(--tw-bg-opacity, 1));
-}
-
 .bg-none {
   background-image: none;
 }
@@ -1261,10 +1224,6 @@ form * {
 
 .p-\[5px\] {
   padding: 5px;
-}
-
-.p-2 {
-  padding: 0.5rem;
 }
 
 .px-\[5px\] {
@@ -1304,22 +1263,6 @@ form * {
 
 .pt-0 {
   padding-top: 0px;
-}
-
-.pb-2 {
-  padding-bottom: 0.5rem;
-}
-
-.pb-0 {
-  padding-bottom: 0px;
-}
-
-.pb-1 {
-  padding-bottom: 0.25rem;
-}
-
-.pr-3 {
-  padding-right: 0.75rem;
 }
 
 .text-left {
@@ -1381,6 +1324,16 @@ form * {
   line-height: 1rem;
 }
 
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
 .text-\[rgb\(128\2c 128\2c 128\)\] {
   --tw-text-opacity: 1;
   color: rgb(128 128 128 / var(--tw-text-opacity, 1));
@@ -1396,6 +1349,11 @@ form * {
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
 
+.text-red-500 {
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity, 1));
+}
+
 .opacity-80 {
   opacity: 0.8;
 }
@@ -1405,18 +1363,13 @@ form * {
 }
 
 .shadow-lg {
-  --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color),
-    0 4px 6px -4px var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
-    var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 .filter {
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast)
-    var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate)
-    var(--tw-sepia) var(--tw-drop-shadow);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 ::-webkit-scrollbar {
@@ -1463,9 +1416,9 @@ form * {
   border-width: 1px;
 }
 
-.hover\:bg-hoverButton:hover {
+.hover\:bg-\[rgb\(99\2c 99\2c 99\)\]:hover {
   --tw-bg-opacity: 1;
-  background-color: rgb(94 98 102 / var(--tw-bg-opacity, 1));
+  background-color: rgb(99 99 99 / var(--tw-bg-opacity, 1));
 }
 
 .hover\:bg-hoverButton:hover {

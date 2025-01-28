@@ -3,17 +3,17 @@
  * make invite key persis (when closing but not added yet and then re-open (pending invites))
  * invite key across room members (allows other room members to accept join)
  */
-import { jsonToMap, mapToJson } from "./json-map-switch";
-import Autobee from "./Autobee";
-import BlindPairing from "blind-pairing";
-import Corestore from "corestore";
-import Hyperswarm from "hyperswarm";
-import Hyperbee from "hyperbee";
-import RAM from "random-access-memory";
-import z32 from "z32";
-import c from "compact-encoding";
-import sodium from "sodium-native";
-import { EventEmitter } from "events";
+import { jsonToMap, mapToJson } from '../utils/json-map-switch';
+import Autobee from './Autobee';
+import BlindPairing from 'blind-pairing';
+import Corestore from 'corestore';
+import Hyperswarm from 'hyperswarm';
+import Hyperbee from 'hyperbee';
+import RAM from 'random-access-memory';
+import z32 from 'z32';
+import c from 'compact-encoding';
+import sodium from 'sodium-native';
+import { EventEmitter } from 'events';
 
 /**
  * Manages multiple calendar rooms and their resources
@@ -29,7 +29,7 @@ import { EventEmitter } from "events";
 export class RoomManager extends EventEmitter {
   constructor(opts = {}) {
     super();
-    this.storageDir = opts.storageDir || "./calendarStorage";
+    this.storageDir = opts.storageDir || './calendarStorage';
     this.corestore = new Corestore(this.storageDir);
     this._localBee = null;
     this.swarm = new Hyperswarm();
@@ -40,7 +40,7 @@ export class RoomManager extends EventEmitter {
 
   get localBee() {
     if (!this._localBee) {
-      throw new Error("localBee is not ready. Did you call `await ready()`?");
+      throw new Error('localBee is not ready. Did you call `await ready()`?');
     }
     return this._localBee;
   }
@@ -50,10 +50,13 @@ export class RoomManager extends EventEmitter {
    */
   async ready() {
     await this.corestore.ready();
-    this._localBee = new Hyperbee(this.corestore.namespace("localData").get({ name: "localBee" }), {
-      keyEncoding: "utf-8",
-      valueEncoding: c.any,
-    });
+    this._localBee = new Hyperbee(
+      this.corestore.namespace('localData').get({ name: 'localBee' }),
+      {
+        keyEncoding: 'utf-8',
+        valueEncoding: c.any,
+      }
+    );
     await this._localBee.ready();
     await this.openAllReadyRooms();
   }
@@ -64,7 +67,9 @@ export class RoomManager extends EventEmitter {
    * @returns {Object} Room configuration options
    */
   getRoomOptions(roomId) {
-    const corestore = roomId ? this.corestore.namespace(roomId) : this.corestore;
+    const corestore = roomId
+      ? this.corestore.namespace(roomId)
+      : this.corestore;
     return { corestore, swarm: this.swarm, pairing: this.pairing };
   }
 
@@ -89,14 +94,14 @@ export class RoomManager extends EventEmitter {
     baseOpts.info = opts.info;
     const room = new CalendarRoom(baseOpts);
     this.rooms[roomId] = room;
-    room.on("roomClosed", () => {
+    room.on('roomClosed', () => {
       delete this.rooms[roomId];
       if (this.closingDown) return;
       if (Object.keys(this.rooms).length > 0) return;
-      process.nextTick(() => this.emit("lastRoomClosed"));
+      process.nextTick(() => this.emit('lastRoomClosed'));
     });
     if (opts.isNew) this._saveRoom(room);
-    process.nextTick(() => this.emit("newRoom", room));
+    process.nextTick(() => this.emit('newRoom', room));
     return room;
   }
 
@@ -108,35 +113,39 @@ export class RoomManager extends EventEmitter {
   async initReadyRoom(opts = {}) {
     if (opts.invite) {
       const discoveryKey = await this.isJoined(opts.invite);
-      if (discoveryKey === "invalid") return false;
+      if (discoveryKey === 'invalid') return false;
       else if (discoveryKey) return this._findRoom(discoveryKey);
     }
     const room = this.initRoom(opts);
     await room.ready();
-    if (!this.discoveryKeys.has(room.discoveryKey)) this.discoveryKeys.add(room.discoveryKey);
+    if (!this.discoveryKeys.has(room.discoveryKey))
+      this.discoveryKeys.add(room.discoveryKey);
 
-    process.nextTick(() => this.emit("readyRoom", room));
+    process.nextTick(() => this.emit('readyRoom', room));
     return room;
   }
 
   async updateRoomInfo(room) {
     try {
-      const roomsInfoDb = await this.localBee.get("roomsInfo");
+      const roomsInfoDb = await this.localBee.get('roomsInfo');
       const roomsInfoMap = jsonToMap(roomsInfoDb.value.toString());
-      roomsInfoMap.get(room.roomId).set("info", room.info);
-      await this.localBee.put("roomsInfo", Buffer.from(mapToJson(roomsInfoMap)));
+      roomsInfoMap.get(room.roomId).set('info', room.info);
+      await this.localBee.put(
+        'roomsInfo',
+        Buffer.from(mapToJson(roomsInfoMap))
+      );
     } catch (err) {
-      console.error("error updating room. does the room exist?", err);
+      console.error('error updating room. does the room exist?', err);
     }
   }
 
   async openAllReadyRooms() {
-    const roomsInfo = await this.localBee.get("roomsInfo");
+    const roomsInfo = await this.localBee.get('roomsInfo');
     if (roomsInfo && roomsInfo.value) {
       const roomsInfoMap = jsonToMap(roomsInfo.value.toString());
       for (const [roomId, infoMap] of roomsInfoMap) {
-        const info = infoMap.get("info");
-        const topic = infoMap.get("topic");
+        const info = infoMap.get('info');
+        const topic = infoMap.get('topic');
         await this.initReadyRoom({ info, roomId, topic: z32.decode(topic) });
       }
     }
@@ -144,11 +153,15 @@ export class RoomManager extends EventEmitter {
 
   async isJoined(invite) {
     try {
-      const discoveryKey = await BlindPairing.decodeInvite(z32.decode(invite)).discoveryKey;
-      return this.discoveryKeys.has(z32.encode(discoveryKey)) && z32.encode(discoveryKey);
+      const discoveryKey = await BlindPairing.decodeInvite(z32.decode(invite))
+        .discoveryKey;
+      return (
+        this.discoveryKeys.has(z32.encode(discoveryKey)) &&
+        z32.encode(discoveryKey)
+      );
     } catch (err) {
       console.error(`invalid invite key: ${invite}`);
-      return "invalid";
+      return 'invalid';
     }
   }
 
@@ -160,16 +173,22 @@ export class RoomManager extends EventEmitter {
    *  store folder key and room id in personal db
    */
   async _saveRoom(room) {
-    room.on("allDataThere", async () => {
-      const roomsInfoDb = await this.localBee.get("roomsInfo");
-      const roomsInfoMap = roomsInfoDb && roomsInfoDb.value ? jsonToMap(roomsInfoDb.value.toString()) : new Map();
+    room.on('allDataThere', async () => {
+      const roomsInfoDb = await this.localBee.get('roomsInfo');
+      const roomsInfoMap =
+        roomsInfoDb && roomsInfoDb.value
+          ? jsonToMap(roomsInfoDb.value.toString())
+          : new Map();
       if (!roomsInfoMap.has(room.roomId)) {
         const detailsMap = new Map([
-          ["info", room.info],
-          ["topic", z32.encode(room.topic)],
+          ['info', room.info],
+          ['topic', z32.encode(room.topic)],
         ]);
         roomsInfoMap.set(room.roomId, detailsMap);
-        await this.localBee.put("roomsInfo", Buffer.from(mapToJson(roomsInfoMap)));
+        await this.localBee.put(
+          'roomsInfo',
+          Buffer.from(mapToJson(roomsInfoMap))
+        );
       }
     });
   }
@@ -226,10 +245,17 @@ export class CalendarRoom extends EventEmitter {
       if (opts.storageDir) this.corestore = new Corestore(opts.storageDir);
       else this.corestore = new Corestore(RAM.reusable());
     }
-    this.swarm = opts.swarm ? opts.swarm : ((this.internalManaged.swarm = true), new Hyperswarm());
-    this.pairing = opts.pairing ? opts.pairing : ((this.internalManaged.pairing = true), new BlindPairing(this.swarm));
-    this.autobee = new Autobee(this.corestore, null, { apply, valueEncoding: c.any }).on("error", (err) =>
-      console.error("An error occurred in Autobee:", err)
+    this.swarm = opts.swarm
+      ? opts.swarm
+      : ((this.internalManaged.swarm = true), new Hyperswarm());
+    this.pairing = opts.pairing
+      ? opts.pairing
+      : ((this.internalManaged.pairing = true), new BlindPairing(this.swarm));
+    this.autobee = new Autobee(this.corestore, null, {
+      apply,
+      valueEncoding: c.any,
+    }).on('error', (err) =>
+      console.error('An error occurred in Autobee:', err)
     );
     this.inviteHex = opts.invite;
     if (opts.invite) this.invite = z32.decode(opts.invite);
@@ -246,8 +272,8 @@ export class CalendarRoom extends EventEmitter {
     this.initialized = true;
     await this.autobee.ready();
 
-    this.swarm.on("connection", async (conn) => {
-      console.log("new peer connected!");
+    this.swarm.on('connection', async (conn) => {
+      console.log('new peer connected!');
       await this.corestore.replicate(conn);
     });
 
@@ -265,10 +291,8 @@ export class CalendarRoom extends EventEmitter {
         sensitive: false,
         expires: 0,
       };
-      const { invite, publicKey, discoveryKey, additional } = BlindPairing.createInvite(
-        this.autobee.local.key,
-        baseOpts
-      );
+      const { invite, publicKey, discoveryKey, additional } =
+        BlindPairing.createInvite(this.autobee.local.key, baseOpts);
       this.discoveryKey = z32.encode(discoveryKey);
       this.metadata.host = {
         publicKey: z32.encode(publicKey),
@@ -276,11 +300,12 @@ export class CalendarRoom extends EventEmitter {
       };
       const member = this.pairing.addMember({
         discoveryKey,
-        onadd: (candidate) => this._onAddMember(publicKey, candidate, additional),
+        onadd: (candidate) =>
+          this._onAddMember(publicKey, candidate, additional),
       });
       await member.flushed();
       this.topic = this.topic || generateTopic();
-      this.emit("allDataThere");
+      this.emit('allDataThere');
       this._connectTopic();
 
       this.invite = invite;
@@ -311,7 +336,7 @@ export class CalendarRoom extends EventEmitter {
         publicKey: z32.encode(result.key),
       };
     }
-    this.emit("allDataThere");
+    this.emit('allDataThere');
     this._connectTopic();
   }
 
@@ -322,17 +347,17 @@ export class CalendarRoom extends EventEmitter {
   }
 
   async _connectOtherCore(key) {
-    await this.autobee.append({ type: "addWriter", key });
-    this.emit("peerEntered", z32.encode(key));
+    await this.autobee.append({ type: 'addWriter', key });
+    this.emit('peerEntered', z32.encode(key));
   }
 
   async _connectTopic() {
     try {
-      console.log("joining topic on", z32.encode(this.topic));
+      console.log('joining topic on', z32.encode(this.topic));
       const discovery = this.swarm.join(this.topic);
       await discovery.flushed();
     } catch (err) {
-      console.error("Error joining swarm topic", err);
+      console.error('Error joining swarm topic', err);
     }
   }
 
@@ -348,7 +373,7 @@ export class CalendarRoom extends EventEmitter {
     if (this.internalManaged.pairing) await this.pairing.close();
     if (this.internalManaged.swarm) await this.swarm.destroy();
     if (this.internalManaged.corestore) await this.corestore.close();
-    this.emit("roomClosed");
+    this.emit('roomClosed');
     this.removeAllListeners(); // clean up listeners
   }
 
@@ -369,20 +394,20 @@ async function apply(batch, view, base) {
     const op = node.value;
 
     // handling "updateSchedule" operation: update requests and schedule between shared peers
-    if (op.type === "updateSchedule") {
+    if (op.type === 'updateSchedule') {
       const scheduleMap = jsonToMap(op.schedule);
       // TODO: add api to request a new change
       // TODO: add api to calculate free time for both parties (store their sharing calendar in autobee)
     }
 
-    if (op.type === "addWriter") {
-      console.log("\rAdding writer", z32.encode(op.key));
+    if (op.type === 'addWriter') {
+      console.log('\rAdding writer', z32.encode(op.key));
       await base.addWriter(op.key);
       continue;
     }
 
-    if (op.type === "removeWriter") {
-      console.log("\rRemoving writer", z32.encode(op.key));
+    if (op.type === 'removeWriter') {
+      console.log('\rRemoving writer', z32.encode(op.key));
       await base.removeWriter(op.key);
       continue;
     }
