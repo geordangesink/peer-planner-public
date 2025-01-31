@@ -3,7 +3,7 @@
  * make invite key persis (when closing but not added yet and then re-open (pending invites))
  * invite key across room members (allows other room members to accept join)
  */
-import { jsonToMap, mapToJson } from '../utils/json-map-switch';
+import { jsonToMap, mapToJson } from '../utils/jsonMapSwitch';
 import Autobee from './Autobee';
 import BlindPairing from 'blind-pairing';
 import Corestore from 'corestore';
@@ -58,6 +58,8 @@ export class RoomManager extends EventEmitter {
       }
     );
     await this._localBee.ready();
+    const calendar = await this._localBee.get('schedule');
+    console.log(calendar);
     await this.openAllReadyRooms();
   }
 

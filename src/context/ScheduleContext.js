@@ -1,7 +1,7 @@
 // TODO: use compact encoding for encoding and decoding
 import { html } from 'htm/react';
 import { createContext, useEffect, useState, useRef } from 'react';
-import { mapToJson, jsonToMap } from '../utils/json-map-switch';
+import { mapToJson, jsonToMap } from '../utils/jsonMapSwitch';
 import { RoomManager } from '../lib/RoomManager';
 
 const ScheduleContext = createContext();
@@ -21,6 +21,8 @@ const ScheduleProvider = ({ children }) => {
     getPersonalSchedule().then(loadSharedSchedules);
   }, []);
 
+  // sets currentSchedule state to personal schedule
+  // and mounts personal bee on db ref
   const getPersonalSchedule = async () => {
     try {
       await roomManagerRef.current.ready();
@@ -31,7 +33,7 @@ const ScheduleProvider = ({ children }) => {
         const scheduleMap = jsonToMap(result.value.toString());
         setCurrentSchedule(scheduleMap);
       } else {
-        const newSchedule = new Map();
+        const newSchedule = generateCalendarFrame();
         setCurrentSchedule(newSchedule);
         await bee.put('schedule', Buffer.from(mapToJson(newSchedule)));
       }
@@ -41,6 +43,7 @@ const ScheduleProvider = ({ children }) => {
     }
   };
 
+  // sets sharedDbObject state to object with all rooms as prop {roomId: room}
   const loadSharedSchedules = async () => {
     const rooms = roomManagerRef.current.rooms;
     if (Object.keys(rooms).length) {
@@ -50,7 +53,7 @@ const ScheduleProvider = ({ children }) => {
     }
   };
 
-  // add new shared schedule db
+  // adds new room (create or join)
   const initCalendarRoom = async (opts = {}) => {
     try {
       const room = await roomManagerRef.current.initReadyRoom({
@@ -79,7 +82,8 @@ const ScheduleProvider = ({ children }) => {
     }
   };
 
-  const setSchedule = async (updated) => {
+  // edits the database and state of current schedule
+  const editCurrentSchedule = async (updated) => {
     setCurrentSchedule(updated);
 
     // update personal schedule
@@ -92,8 +96,6 @@ const ScheduleProvider = ({ children }) => {
         }
       }
     } else {
-      // update shared schedule
-      //////// NEED TO EDIT
       if (
         sharedDbObject[roomIdRef.current] &&
         sharedDbObject[roomIdRef.current].autobee.writable
@@ -110,6 +112,11 @@ const ScheduleProvider = ({ children }) => {
     }
   };
 
+  // switches the displayed schedule state
+  const changeDisplayedSchedule = (scheduleMap) => {
+    setCurrentSchedule(scheduleMap);
+  };
+
   return html`
     <${ScheduleContext.Provider}
       value=${{
@@ -118,8 +125,8 @@ const ScheduleProvider = ({ children }) => {
         roomIdRef,
         currentSchedule,
         sharedDbObject,
-        setCurrentSchedule,
-        setSchedule,
+        changeDisplayedSchedule,
+        editCurrentSchedule,
         initCalendarRoom,
         getPersonalSchedule,
       }}
@@ -130,3 +137,18 @@ const ScheduleProvider = ({ children }) => {
 };
 
 export { ScheduleContext, ScheduleProvider };
+
+// schedule skeleton map
+function generateCalendarFrame() {
+  return new Map([
+    ['daily', new Map()],
+    ['weekdays', new Map()],
+    ['weekly', new Map()],
+    ['monthly', new Map()],
+    ['monthlyNum', new Map()],
+    ['monthlyLast', new Map()],
+    ['monthlyLastDay', new Map()],
+    ['annually', new Map()],
+    ['custom', new Map()],
+  ]);
+}

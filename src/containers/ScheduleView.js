@@ -1,25 +1,27 @@
 import { html } from 'htm/react';
 import { useState } from 'react';
-import CalendarHeader from '../components/CalendarHeader';
-import CalendarInterfaceWeek from '../features/week-interface/CalendarInterfaceWeek';
-import ConfigureActivity from '../features/configure-activity/ConfigureActivity';
-import ThisOrAllChange from '../components/ThisOrAllChange';
+import ScheduleHeader from '../features/schedule-control/ScheduleHeader';
+import ScheduleInterfaceWeek from '../features/week-interface/ScheduleInterfaceWeek';
+import EditActivity from '../features/configure-activity/EditActivity';
+import ThisOrAllChange from '../features/configure-activity/ThisOrAllChange';
+import PopupWindow from '../components/PopupWindow';
 import useIsVisible from '../hooks/useIsVisible';
 import useSchedule from '../hooks/useSchedule';
-import adjustScheduleDrag from '../api/CalendarInterface/weekInterface/adjustScheduleDrag';
+import adjustScheduleDrag from '../utils/adjustScheduleDrag';
 
 export default () => {
-  const configureActivityComp = useIsVisible();
+  const editActivityComp = useIsVisible();
   const thisOrAllChangeComp = useIsVisible();
-  const { currentSchedule, setSchedule } = useSchedule();
+  const { currentSchedule, editCurrentSchedule } = useSchedule();
   const [tempEventSave, setTempEventSave] = useState(undefined); // when intermediate user input is needed (this or all change)
   const [tempNewScheduleSaved, setTempNewScheduleSaved] = useState({}); // save the edit window config if needed
   const [oldActivityData, setOldActivityData] = useState();
-  const [dragPreviewStyle, setDragPreviewStyle] = useState({ display: 'none' });
   const [isCreate, setIsCreate] = useState(true);
   const [isDelete, setIsDelete] = useState(false);
   const [isFirstRepeating, setIsFirstRepeating] = useState();
   // TODO: change some states to refs???
+
+  console.log('rendered CalendarView');
 
   const requestScheduleChange = (event = undefined, newSchedule = {}) => {
     const detailsMap = oldActivityData.detailsMap;
@@ -41,7 +43,6 @@ export default () => {
       setIsDelete(false);
       setTempEventSave(event);
       setTempNewScheduleSaved(newSchedule);
-      setDragPreviewStyle({ display: 'none' });
       thisOrAllChangeComp.handleMakeVisible();
     }
   };
@@ -58,7 +59,7 @@ export default () => {
       if (!updatedSchedule.get(detailsMap.get('from').toISOString()).size)
         updatedSchedule.delete(detailsMap.get('from').toISOString());
 
-      setSchedule(updatedSchedule);
+      editCurrentSchedule(updatedSchedule);
     } else {
       // check if the edited activity is the first of the repeating
       if (
@@ -101,11 +102,10 @@ export default () => {
       timeIndex,
     });
 
-    setSchedule(updated);
+    editCurrentSchedule(updated);
     setTempNewScheduleSaved({});
     setTempEventSave(undefined);
     setOldActivityData(undefined);
-    setDragPreviewStyle({ display: 'none' });
   };
 
   const handleDeleteRepeatActivity = (ThisOrAllChangeInput = undefined) => {
@@ -131,43 +131,53 @@ export default () => {
         .set('endRepeat', new Date(oldActivityData.startTime.toDateString()));
     }
     setOldActivityData(undefined);
-    setSchedule(updatedSchedule);
+    editCurrentSchedule(updatedSchedule);
   };
 
   return html`
     <main className="w-calendar-view h-full flex-grow p-5 pt-0 pb-2 pr-3 flex flex-col">
-      <${CalendarHeader} 
-        handleMakeCreateVisible=${configureActivityComp.handleMakeVisible}
+      <${ScheduleHeader} 
+        handleMakeEditVisible=${editActivityComp.handleMakeVisible}
       />
-      <${CalendarInterfaceWeek} 
+      <${ScheduleInterfaceWeek} 
         getGridLocation=${getGridLocation}
         requestScheduleChange=${requestScheduleChange}
-        handleMakeCreateVisible=${configureActivityComp.handleMakeVisible}
+        handleMakeEditVisible=${editActivityComp.handleMakeVisible}
         setOldActivityData=${setOldActivityData}
-        dragPreviewStyle=${dragPreviewStyle}
-        setDragPreviewStyle=${setDragPreviewStyle}
         setIsCreate=${setIsCreate}
       >
       </>
-      <${ConfigureActivity}
-        onClose=${() => (configureActivityComp.handleMakeInvisible(), setIsCreate(true))}
-        requestScheduleChange=${requestScheduleChange}
-        requestDeleteActivity=${requestDeleteActivity}
-        oldActivityData=${oldActivityData}
-        isVisible=${configureActivityComp.isVisible}
-        isCreate=${isCreate}
-        title="Create New Activity"
+      <${PopupWindow}
+        isVisible=${editActivityComp.isVisible}
+        onClose=${() => (editActivityComp.handleMakeInvisible(), setIsCreate(true))}
+        widthPx=${600}
+        heightPx=${500}
       >
+        <${EditActivity}
+          onClose=${() => (editActivityComp.handleMakeInvisible(), setIsCreate(true))}
+          requestScheduleChange=${requestScheduleChange}
+          requestDeleteActivity=${requestDeleteActivity}
+          oldActivityData=${oldActivityData}
+          isCreate=${isCreate}
+          title="Create New Activity"
+        >
+        </>
       </>
-      <${ThisOrAllChange}
-        onClose=${thisOrAllChangeComp.handleMakeInvisible}
-        handleScheduleChange=${handleScheduleChange}
-        handleDeleteRepeatActivity=${handleDeleteRepeatActivity}
+      <${PopupWindow}
         isVisible=${thisOrAllChangeComp.isVisible}
-        isDelete=${isDelete}
-        isFirstRepeating=${isFirstRepeating}
-        title="ThisOrAllChange"
+        onClose=${thisOrAllChangeComp.handleMakeInvisible}
+        widthPx=${600}
+        heightPx=${400}
       >
+        <${ThisOrAllChange}
+          onClose=${thisOrAllChangeComp.handleMakeInvisible}
+          handleScheduleChange=${handleScheduleChange}
+          handleDeleteRepeatActivity=${handleDeleteRepeatActivity}
+          isDelete=${isDelete}
+          isFirstRepeating=${isFirstRepeating}
+          title="ThisOrAllChange"
+        >
+        </> 
       </> 
     </main>
   `;

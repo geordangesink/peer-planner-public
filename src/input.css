@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Variables */
-:root {
-  --title-bar-height: 35px;
-}
-
 /* Custom Scrollbar Styles */
 @layer utilities {
   ::-webkit-scrollbar {

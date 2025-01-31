@@ -1,13 +1,14 @@
 import { html } from 'htm/react';
 import { useState, useEffect } from 'react';
-import useDate from '../hooks/useDate';
-import Button from './Button';
-import NavigationButtonGroup from './NavigationButtonGroup';
+import useDate from '../../hooks/useDate';
+import NavigationButtonGroup from '../../components/NavigationButtonGroup';
 
 // displayed month quick-pick
 export default () => {
   const { currentDate, setDate } = useDate();
   const [sidebarMonth, setSidebarMonth] = useState(currentDate);
+
+  console.log('rendered MonthDaysView');
 
   useEffect(() => {
     setSidebarMonth(currentDate);
@@ -37,12 +38,12 @@ export default () => {
     currentMonth,
     1
   ).getDay();
-  // startDayOfMonth = startDayOfMonth === 0 ? 6 : startDayOfMonth - 1; // only for Mondays, delete for Sundays (for where the week starts)
+  // startDayOfMonth = startDayOfMonth === 0 ? 6 : startDayOfMonth - 1; // uncomment for Mondays, delete for Sundays (for where the week starts)
 
   // array to hold the days to be displayed
   const displayedMonthDays = [];
 
-  // days from the previous month
+  // days from the previous month to be displayed (gray)
   for (let i = startDayOfMonth - 1; i >= 0; i--) {
     displayedMonthDays.push({
       day: previousMonthDays - i,
@@ -56,7 +57,7 @@ export default () => {
     });
   }
 
-  // days from the current month
+  // days from the current month to be displayed (white)
   for (let i = 1; i <= daysInMonth; i++) {
     displayedMonthDays.push({
       day: i,
@@ -66,7 +67,7 @@ export default () => {
     });
   }
 
-  // days from the next month
+  // days from the next month to be displayed (gray)
   const nextMonthIndex = currentMonth === 11 ? 0 : currentMonth + 1;
   for (let i = 1; displayedMonthDays.length < 42; i++) {
     displayedMonthDays.push({
@@ -77,12 +78,12 @@ export default () => {
     });
   }
 
-  // handler for day clicks
+  // change date context to clicked date
   const handleDayClick = (dayObj) => {
     setDate(dayObj.date); // set the date to the clicked day
   };
 
-  // handle month change
+  // handle month change only in this comp
   const handleMonthChange = (userInput) => {
     const newDate = new Date(sidebarMonth);
     newDate.setFullYear(

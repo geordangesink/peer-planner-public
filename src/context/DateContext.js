@@ -1,39 +1,50 @@
-import { html } from "htm/react";
-import { createContext, useState } from "react";
+import { html } from 'htm/react';
+import { createContext, useState, useCallback } from 'react';
 
+// Create the DateContext
 const DateContext = createContext();
 
 const DateProvider = ({ children }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  // change the displayed month
-  const changeMonth = (userInput) => {
-    const newDate = new Date(currentDate);
+  // Helper function to get the new month after change
+  const getNewMonthDate = (userInput) => {
+    const newDate = new Date(currentDate); // Create a copy to avoid mutation
     newDate.setFullYear(
       newDate.getFullYear() + Math.floor((newDate.getMonth() + userInput) / 12)
     );
-    newDate.setMonth(
-      newDate.getMonth() + userInput >= 0
-        ? (newDate.getMonth() + userInput) % 12
-        : (12 + ((newDate.getMonth() + userInput) % 12)) % 12
-    );
-    setCurrentDate(newDate);
+    newDate.setMonth((newDate.getMonth() + userInput + 12) % 12);
+    return newDate;
   };
 
-  // change the displayed week
-  const changeWeek = (userInput) => {
-    const newDate = new Date(currentDate);
-    newDate.setDate(currentDate.getDate() + userInput);
-    setCurrentDate(newDate);
-  };
+  // change the displayed month (memoized function)
+  const changeMonth = useCallback(
+    (userInput) => {
+      const newDate = getNewMonthDate(userInput);
+      setCurrentDate(newDate);
+    },
+    [currentDate]
+  );
 
-  // set the date to today
-  const handleToday = () => setCurrentDate(new Date());
+  // change the displayed week (memoized function)
+  const changeWeek = useCallback(
+    (userInput) => {
+      const newDate = new Date(currentDate);
+      newDate.setDate(currentDate.getDate() + userInput);
+      setCurrentDate(newDate);
+    },
+    [currentDate]
+  );
 
-  // directly set the date (e.g., when a user clicks on a specific day)
-  const setDate = (date) => {
+  // set the date to today (memoized function)
+  const handleToday = useCallback(() => {
+    setCurrentDate(new Date());
+  }, []);
+
+  // directly set the date when a user clicks on a specific day (memoized function)
+  const setDate = useCallback((date) => {
     setCurrentDate(new Date(date));
-  };
+  }, []);
 
   return html`
     <${DateContext.Provider}

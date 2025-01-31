@@ -8,17 +8,18 @@ import useSchedule from '../../hooks/useSchedule';
 export default ({
   getGridLocation,
   requestScheduleChange,
-  handleMakeCreateVisible,
+  handleMakeEditVisible,
   setOldActivityData,
-  dragPreviewStyle,
-  setDragPreviewStyle,
   setIsCreate,
 }) => {
   const { currentDate, setDate } = useDate();
   const { currentSchedule } = useSchedule();
+  const [dragPreviewStyle, setDragPreviewStyle] = useState({ display: 'none' });
   const [activitiesForCurrentWeek, setActivitiesForCurrentWeek] = useState([]);
   const [activitiesMultiday, setActivitiesMultiday] = useState([]);
   const [displayedDates, setDisplayedDates] = useState([]);
+
+  console.log('rendered CalendarInterfaceWeek');
 
   // calculate dates to display for currently viewd week
   useEffect(() => {
@@ -63,7 +64,7 @@ export default ({
     });
     if (isClick) {
       setIsCreate(false);
-      handleMakeCreateVisible();
+      handleMakeEditVisible();
     }
   };
 
@@ -226,9 +227,7 @@ export default ({
                           if (activity === 'place-holder') {
                             return html`<div
                               key=${`place-holder-${index}-${index}`}
-                              style=${{
-                                height: '18px',
-                              }}
+                              className="h-[18px] w-full"
                             ></div>`;
                           }
                           const { key, date, startTime, endTime, detailsMap } =
@@ -237,9 +236,7 @@ export default ({
                             <div
                               key=${`activity-${index}-${index}`}
                               className="relative w-full overflow-hidden rounded-[5px] cursor-pointer z-[3] activity-title-low-height my-[2px]"
-                              style=${{
-                                height: '18px',
-                              }}
+                              className="h-[18px] w-full"
                               onClick=${(e) =>
                                 handleEdit(
                                   e,
@@ -341,7 +338,10 @@ export default ({
                 id="scheduleActivities"
                 className="absolute grid overflow-hidden h-[1200px] w-[calc(100%-48px)] min-w-[700px] grid-cols-7 grid-rows-[repeat(96,_12.5px)] z-[3]"
                 onDragOver=${handleDragOver}
-                onDrop=${requestScheduleChange}
+                onDrop=${(e) => (
+                  setDragPreviewStyle({ display: 'none' }),
+                  requestScheduleChange(e)
+                )}
               >
                 ${activitiesForCurrentWeek.map(
                   ({ key, date, startTime, endTime, detailsMap }, index) => {

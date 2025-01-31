@@ -7,7 +7,6 @@ export default function RoomPopup({
   onClose,
   onSave,
   onLeave,
-  isVisible,
   isCreate,
   setIsCreate,
 }) {
@@ -19,7 +18,6 @@ export default function RoomPopup({
   const calendarNameRef = useRef();
   const calendarDescriptionRef = useRef();
   const calendarColorRef = useRef();
-  const popupContentRef = useRef();
 
   const getInfo = () => ({
     name: calendarNameRef.current.value,
@@ -54,35 +52,11 @@ export default function RoomPopup({
     onClose();
   };
 
-  const handleOverlayClick = (e) => {
-    if (
-      popupContentRef.current &&
-      !popupContentRef.current.contains(e.target)
-    ) {
-      onClose();
-    }
-  };
-
-  if (!isVisible) return null;
-
   const currentRoom = sharedDbObject[roomIdRef.current];
 
   return html`
-    <div
-      className="fixed inset-0 w-full h-full bg-black/50 flex items-center justify-center z-[1000]"
-      onClick=${handleOverlayClick}
-    >
-      <div
-        className="bg-black border border-gray-400/40 p-5 rounded relative w-[600px] h-[400px] shadow-lg flex flex-col items-center justify-center"
-        ref=${popupContentRef}
-      >
-        <button
-          className="absolute top-3 right-3 text-xl border-none bg-none cursor-pointer text-white"
-          onClick=${onClose}
-        >
-          ×
-        </button>
 
+    
         <form className="space-y-3 flex flex-col justify-start w-4/5 mb-5">
           <input
             id="calendar-name"
@@ -135,7 +109,5 @@ export default function RoomPopup({
             Leave Room
           </${Button}>`
         }
-      </div>
-    </div>
   `;
 }

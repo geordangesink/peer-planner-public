@@ -1,10 +1,10 @@
 import { html } from 'htm/react';
 import { useState } from 'react';
-import CurrentDate from '../components/CurrentDate';
-import MonthDaysView from '../components/MonthDaysView';
-import PeersView from '../components/PeersView';
-import RoomInfo from '../features/room-info/RoomInfo';
-import RoomsList from '../components/RoomsList';
+import MonthDaysView from '../features/date-quick-select/MonthDaysView';
+import ConnectionTools from '../features/rooms/ConnectionTools';
+import RoomInfo from '../features/rooms/RoomInfo';
+import RoomsList from '../features/rooms/RoomsList';
+import PopupWindow from '../components/PopupWindow';
 import useSchedule from '../hooks/useSchedule';
 import useIsVisible from '../hooks/useIsVisible';
 
@@ -14,7 +14,7 @@ export default () => {
   const [isCreate, setIsCreate] = useState(false);
 
   const handleLeave = async (room) => {
-    // need to add function to roomManager
+    // TODO: need to add function to roomManager
     // sharedDbObject[room.roomId] = undefined;
     await roomManagerRef.current.deleteRoom(room);
   };
@@ -28,20 +28,28 @@ export default () => {
     <nav
       className="flex w-[250px] min-w-[250px] bg-sidebar flex-col items-center border-r border-gray-40"
     >
-      <${CurrentDate} />
       <${MonthDaysView} />
-      <${PeersView} setIsCreate=${setIsCreate} roomInfoComp=${roomInfoComp} />
-      <${RoomInfo}
+      <${ConnectionTools} setIsCreate=${setIsCreate} roomInfoComp=${roomInfoComp} />
+      <${PopupWindow}
+        isVisible=${roomInfoComp.isVisible}
         onClose=${() => {
           roomInfoComp.handleMakeInvisible();
           setIsCreate(false);
         }}
-        onSave=${updateRoomInfo}
-        onLeave=${handleLeave}
-        setIsCreate=${setIsCreate}
-        isCreate=${isCreate}
-        isVisible=${roomInfoComp.isVisible}
-      />
+        widthPx=${600}
+        heightPx=${400}
+      >
+        <${RoomInfo}
+          onClose=${() => {
+            roomInfoComp.handleMakeInvisible();
+            setIsCreate(false);
+          }}
+          onSave=${updateRoomInfo}
+          onLeave=${handleLeave}
+          setIsCreate=${setIsCreate}
+          isCreate=${isCreate}
+        />
+      </>
       <${RoomsList} roomInfoComp=${roomInfoComp} />
     </nav>
   `;

@@ -1,7 +1,7 @@
 // TODO: move components to sidebar container
 import { html } from 'htm/react';
 import { useState } from 'react';
-import Button from './Button';
+import Button from '../../components/Button';
 
 export default ({ setIsCreate, roomInfoComp }) => {
   const [searchInput, setSearchInput] = useState();

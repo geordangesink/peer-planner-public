@@ -1,9 +1,9 @@
 import { html } from 'htm/react';
-import { jsonToMap } from '../utils/json-map-switch';
-import useSchedule from '../hooks/useSchedule';
+import { jsonToMap } from '../../utils/jsonMapSwitch';
+import useSchedule from '../../hooks/useSchedule';
 
 export default ({ roomInfoComp }) => {
-  const { sharedDbObject, roomIdRef, setCurrentSchedule } = useSchedule();
+  const { sharedDbObject, roomIdRef, changeDisplayedSchedule } = useSchedule();
 
   const handleClickRoom = async (roomId, room) => {
     if (roomIdRef.current === roomId) {
@@ -19,9 +19,9 @@ export default ({ roomInfoComp }) => {
       schedule.value &&
       Object.keys(schedule.value).length !== 0
     ) {
-      setCurrentSchedule(jsonToMap(schedule.value.toString()));
+      changeDisplayedSchedule(jsonToMap(schedule.value.toString()));
     } else {
-      setCurrentSchedule(new Map());
+      changeDisplayedSchedule(new Map());
     }
   };
 

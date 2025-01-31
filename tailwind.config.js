@@ -4,14 +4,15 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
-      spacing: {
-        'title-bar': 'var(--title-bar-height)',
-      },
       fontFamily: {
         sans: ['Arial', 'sans-serif'],
       },
+      height: {
+        'title-bar': '35px',
+      },
       width: {
         'calendar-view': 'calc(100vw - 250px)',
+        nav: '250px',
       },
       colors: {
         sidebar: '#323335',
