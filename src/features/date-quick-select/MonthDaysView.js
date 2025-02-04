@@ -3,7 +3,9 @@ import { useState, useEffect } from 'react';
 import useDate from '../../hooks/useDate';
 import NavigationButtonGroup from '../../components/NavigationButtonGroup';
 
-// displayed month quick-pick
+/**
+ * Displays a date quick-picker and adjusts the currently selected date accordingly.
+ */
 export default () => {
   const { currentDate, setDate } = useDate();
   const [sidebarMonth, setSidebarMonth] = useState(currentDate);

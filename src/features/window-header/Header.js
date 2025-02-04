@@ -2,6 +2,9 @@ import { html } from 'htm/react';
 import { useState, useEffect } from 'react';
 import useSchedule from '../../hooks/useSchedule';
 
+/**
+ * Header elements of the Calendar app
+ */
 export default () => {
   const { roomIdRef, sharedDbObject } = useSchedule();
   const [dateTime, setDateTime] = useState(new Date());

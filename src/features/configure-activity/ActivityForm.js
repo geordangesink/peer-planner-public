@@ -5,9 +5,27 @@ import useActivityState from './useActivityState';
 import useDate from '../../hooks/useDate';
 import useSchedule from '../../hooks/useSchedule';
 
+/**
+ * Form for editing or creating an activity.
+ *
+ * @param {Object} props - The component props.
+ * @param {boolean} [props.isCreate] - Is the form for creating a new activity?
+ * @param {Object} [props.oldActivityData] - Activity data when editing an existing activity.
+ * @param {Object} [props.visibilityCustomRep] - custom hook to manage the visibility of the custom repeat component.
+ * @param {Ref} props.titleRef - Ref for the title input.
+ * @param {Ref} props.fromDateRef - Ref for the "from date" input.
+ * @param {Ref} props.fromTimeRef - Ref for the "from time" input.
+ * @param {Ref} props.untilDateRef - Ref for the "until date" input.
+ * @param {Ref} props.untilTimeRef - Ref for the "until time" input.
+ * @param {Ref} props.descriptionRef - Ref for the description input.
+ * @param {Ref} props.repeatRef - Ref for the repeat selection input.
+ * @param {Ref} props.colorRef - Ref for the color picker input.
+ * @param {Ref} props.notificationRef - Ref for the notification setting input.
+ */
 export default ({
   isCreate,
   oldActivityData,
+  visibilityCustomRep,
   titleRef,
   fromDateRef,
   fromTimeRef,
@@ -17,7 +35,6 @@ export default ({
   repeatRef,
   colorRef,
   notificationRef,
-  isVisibleCustomRep,
 }) => {
   const { editOpts } = useActivityState(oldActivityData, isCreate);
   const { sharedDbObject, roomIdRef } = useSchedule();
@@ -33,7 +50,7 @@ export default ({
 
   const handleCustomRepeatClick = () => {
     if (repeatRef.current.value === 'custom') {
-      isVisibleCustomRep.handleMakeVisible();
+      visibilityCustomRep.handleMakeVisible();
     }
   };
 

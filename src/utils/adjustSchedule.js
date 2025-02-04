@@ -1,17 +1,31 @@
-// TODO: when using 'allFollowing', make activity to custom repeat and edit endRepeat accordingly
+import sodium from 'sodium-native';
+
+// TODO: possibility to edit repetiotion (just take the same start time and edit end time and repetition)
+// TODO: when draging an activity with end, also adjust the end (also adjust the days for custom repeats)
+// TODO: make difference between edit and drag a bit more clear
 // TODO: when deleting 'this' activity, but its the last one (due to moving all following), delete whole group
 // TODO: when moving 'this' and it is the first one, move the start of the repeating one (to avoid having "all following" for the first one of the left over repeating)
 
-import sodium from 'sodium-native';
-
+/**
+ * Adjusts the schedule based on drag-and-drop or EditActivity information
+ *
+ * @param {Map} currentSchedule - Map of curretly displayed schedule
+ * @param {Object} activity -
+ * @property {Object} [activity.oldActivityData] -
+ * @property {Map} [activity.updatedActivity] - new activity map when edited (output of EditActivity)
+ * @property {String} [activity.thisOrAll] - output of ThisOrAllChange component for repeating activities
+ * @property {number} [activity.dayIndex] - day index of activity on grid before drag-and-drop
+ * @property {number} [activity.timeIndex] - time index of activity on grid before drag-and-drop
+ * @returns
+ */
 export default function (currentSchedule, activity) {
   const { key, date, startTime, detailsMap, timeIndexOffset } =
     activity.oldActivityData;
 
   // if edited using configure activity window (only extract double nested map [[activityDetails, values]])
-  let newSchedule;
-  if (activity.newSchedule.size)
-    newSchedule = activity.newSchedule
+  let updatedActivity;
+  if (activity.updatedActivity.size)
+    updatedActivity = activity.updatedActivity
       .values()
       .next()
       .value.values()
@@ -35,7 +49,7 @@ export default function (currentSchedule, activity) {
   // set the new start time based on dragged position or edit input difference to relative old start/end
   let durationInMinutes;
   let targetStartTime;
-  if (!newSchedule) {
+  if (!updatedActivity) {
     durationInMinutes =
       (new Date(oldEndTime) - new Date(oldStartTime)) / (1000 * 60);
     targetStartTime = new Date(startTime);
@@ -51,9 +65,10 @@ export default function (currentSchedule, activity) {
     );
   } else {
     durationInMinutes =
-      (new Date(newSchedule.get('until')) - new Date(newSchedule.get('from'))) /
+      (new Date(updatedActivity.get('until')) -
+        new Date(updatedActivity.get('from'))) /
       (1000 * 60);
-    targetStartTime = new Date(newSchedule.get('from'));
+    targetStartTime = new Date(updatedActivity.get('from'));
   }
 
   // getting the difference of dropped time and initial time and adding it to the time that needs to be changed (for example for groups)
@@ -75,9 +90,11 @@ export default function (currentSchedule, activity) {
   const updatedScheduleMap = () => {
     const excludedKeys = ['groupKey', 'dateExceptions'];
     const updatedScheduleMap = new Map(currentSchedule);
-    const activityGroup = activity.thisOrAll
-      ? updatedScheduleMap.get(detailsMap.get('repeat')).get(groupKey)
-      : null;
+    const activityGroup =
+      activity.thisOrAll &&
+      updatedScheduleMap.get(detailsMap.get('repeat')).get(groupKey);
+
+    const endRepeat = activity.thisOrAll && activityGroup.get('endRepeat');
 
     const buffer = Buffer.alloc(32);
     sodium.randombytes_buf(buffer);
@@ -86,9 +103,12 @@ export default function (currentSchedule, activity) {
     switch (activity.thisOrAll) {
       case 'all':
         // delete if it is moved beyond endRepeat
+        console.log(activityGroup);
         if (
-          activityGroup.get('endRepeat') !== 'never' &&
-          activityGroup.get('endRepeat').getTime() < newStartDate.getTime()
+          endRepeat !== 'never' &&
+          ((endRepeat instanceof Date &&
+            endRepeat.getTime() < newStartDate.getTime()) ||
+            (endRepeat instanceof Number && isNewStartBeyondLastRecurrence()))
         ) {
           updatedScheduleMap.get(detailsMap.get('repeat')).delete(groupKey);
         } else {
@@ -98,8 +118,8 @@ export default function (currentSchedule, activity) {
           activityGroup.set('until', newEndDate);
 
           // if edited in configurator (not drag-and-drop)
-          if (newSchedule) {
-            for (const [key, value] of newSchedule.entries()) {
+          if (updatedActivity) {
+            for (const [key, value] of updatedActivity.entries()) {
               if (!excludedKeys.includes(key)) {
                 activityGroup.set(key, value);
               }
@@ -127,8 +147,10 @@ export default function (currentSchedule, activity) {
       case 'allFollowing':
         // delete if it is moved beyond endRepeat
         if (
-          activityGroup.get('endRepeat') !== 'never' &&
-          activityGroup.get('endRepeat').getTime() < newStartDate.getTime()
+          endRepeat !== 'never' &&
+          ((endRepeat instanceof Date &&
+            endRepeat.getTime() < newStartDate.getTime()) ||
+            (endRepeat instanceof Number && isNewStartBeyondLastRecurrence()))
         ) {
           updatedScheduleMap.get(detailsMap.get('repeat')).delete(groupKey);
         } else {
@@ -140,8 +162,8 @@ export default function (currentSchedule, activity) {
 
           oldActivity.set('endRepeat', endRepeat);
           updatedActivityDetails.set('groupKey', newKey);
-          if (newSchedule) {
-            for (const [key, value] of newSchedule.entries()) {
+          if (updatedActivity) {
+            for (const [key, value] of updatedActivity.entries()) {
               if (!excludedKeys.includes(key)) {
                 updatedActivityDetails.set(key, value);
               }
@@ -156,8 +178,8 @@ export default function (currentSchedule, activity) {
       case 'this':
         const dateExceptionsArr = activityGroup.get('dateExceptions');
 
-        if (newSchedule) {
-          for (const [key, value] of newSchedule.entries()) {
+        if (updatedActivity) {
+          for (const [key, value] of updatedActivity.entries()) {
             if (!excludedKeys.includes(key)) {
               updatedActivityDetails.set(key, value);
             }
@@ -191,8 +213,8 @@ export default function (currentSchedule, activity) {
         break;
 
       default: // non-repeating
-        if (newSchedule) {
-          for (const [key, value] of newSchedule.entries()) {
+        if (updatedActivity) {
+          for (const [key, value] of updatedActivity.entries()) {
             if (!excludedKeys.includes(key)) {
               updatedActivityDetails.set(key, value);
             }
@@ -205,11 +227,16 @@ export default function (currentSchedule, activity) {
         if (oneDaySchedule.size === 0) updatedScheduleMap.delete(date);
 
         // Add activity to new date or repeat
-        if (newSchedule && newSchedule.get('repeat') !== 'no-repeat') {
-          updatedActivityDetails.set('groupKey', newSchedule.get('groupKey'));
+        console.log(updatedActivity);
+        console.log(updatedScheduleMap);
+        if (updatedActivity && updatedActivity.get('repeat') !== 'no-repeat') {
+          updatedActivityDetails.set(
+            'groupKey',
+            updatedActivity.get('groupKey')
+          );
           updatedScheduleMap
-            .get(newSchedule.get('repeat'))
-            .set(newSchedule.get('groupKey'), updatedActivityDetails);
+            .get(updatedActivity.get('repeat'))
+            .set(updatedActivity.get('groupKey'), updatedActivityDetails);
         } else {
           if (!updatedScheduleMap.has(newDate)) {
             updatedScheduleMap.set(newDate, new Map());
@@ -223,4 +250,9 @@ export default function (currentSchedule, activity) {
   };
 
   return updatedScheduleMap();
+}
+
+// TODO: function to check if new start date is beyond last recurrence
+function isNewStartBeyondLastRecurrence() {
+  return null;
 }

@@ -1,9 +1,4 @@
-/**
- * POSSIBLE IMPROVEMENTS
- * make invite key persis (when closing but not added yet and then re-open (pending invites))
- * invite key across room members (allows other room members to accept join)
- */
-import { jsonToMap, mapToJson } from '../utils/jsonMapSwitch';
+import { jsonToMap, mapToJson } from '../utils/parseMapJson';
 import Autobee from './Autobee';
 import BlindPairing from 'blind-pairing';
 import Corestore from 'corestore';
@@ -16,7 +11,14 @@ import sodium from 'sodium-native';
 import { EventEmitter } from 'events';
 
 /**
- * Manages multiple calendar rooms and their resources
+ * POSSIBLE IMPROVEMENTS
+ * make invite key persis (when closing but not added yet and then re-open (pending invites))
+ * invite key across room members (allows other room members to accept join)
+ */
+
+/**
+ * Creates, saves and manages all calendar rooms
+ *
  * @typedef {Object} RoomManagerOptions
  * @property {string} [storageDir] - Optional storage directory path
  * @property {Corestore} [corestore] - Corestore instance

@@ -1,16 +1,22 @@
 import { html } from 'htm/react';
 import { useRef, useState } from 'react';
 import Button from '../../components/Button';
-import { useRoomActions } from './useRoomActions';
+import useRoomActions from './useRoomActions';
+import useSchedule from '../../hooks/useSchedule';
 
-export default function RoomPopup({
-  onClose,
-  onSave,
-  onLeave,
-  isCreate,
-  setIsCreate,
-}) {
+/**
+ * Interface for room information or creation (and joining).
+ * Also handles edits to room info, such as color, name, etc.
+ *
+ * @param {Object} props - The component props.
+ * @param {Function} [props.onClose] - Callback function executed when closing the component.
+ * @param {Function} [props.onLeave] - Callback function executed when leaving the room.
+ * @param {boolean} [props.isCreate] - Indicates if the form is for creating a new room (`true`) or editing an existing room (`false`).
+ * @param {Function} [props.setIsCreate] - Callback function to toggle the state of creating a new room (`true`) or editing an existing one (`false`).
+ */
+export default ({ onClose, onLeave, isCreate, setIsCreate }) => {
   const { saveRoomInfo, sharedDbObject, roomIdRef } = useRoomActions();
+  const { roomManagerRef } = useSchedule();
 
   const [isCreating, setIsCreating] = useState(false);
   const [inviteKey, setInviteKey] = useState('');
@@ -25,7 +31,7 @@ export default function RoomPopup({
     description: calendarDescriptionRef.current.value,
   });
 
-  const handleCreate = async () => {
+  const handleSave = async () => {
     const info = getInfo();
     setIsCreating(true);
 
@@ -35,6 +41,10 @@ export default function RoomPopup({
         alert('Failed to join or create room. Check the invite key.');
         setIsCreating(false);
         return;
+      } else if (!isCreate) {
+        room.info = info;
+        await roomManagerRef.current.updateRoomInfo(room);
+        onClose();
       }
       setInviteKey('');
       setIsCreate(false);
@@ -43,13 +53,6 @@ export default function RoomPopup({
     } finally {
       setIsCreating(false);
     }
-  };
-
-  const handleSave = async () => {
-    const room = sharedDbObject[roomIdRef.current];
-    const info = getInfo();
-    onSave(room, info);
-    onClose();
   };
 
   const currentRoom = sharedDbObject[roomIdRef.current];
@@ -94,9 +97,10 @@ export default function RoomPopup({
         }
 
         <${Button}
-          variant="square"
-          className=${`mt-3 ${isCreate ? 'w-[200px]' : ''}`}
-          onClick=${() => (isCreate ? handleCreate() : handleSave())}
+          variant='square'
+          className='mt-3'
+          width=${(isCreate || isCreating) && 'wide'}
+          onClick=${handleSave}
           isDisabled=${isCreating}
         >
           ${isCreating ? 'Processing...' : isCreate ? 'Join/Create' : 'Save'}
@@ -110,4 +114,4 @@ export default function RoomPopup({
           </${Button}>`
         }
   `;
-}
+};

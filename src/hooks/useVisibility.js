@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-// checks if component hsould be visible or not
+/**
+ * Hook to modify and check visibility of an component
+ */
 export default () => {
   const [isVisible, setVisible] = useState(false);
 

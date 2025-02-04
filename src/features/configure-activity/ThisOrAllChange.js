@@ -1,6 +1,17 @@
 import { html } from 'htm/react';
 import { useState } from 'react';
 
+/**
+ * UX to decide if all, only the selected, or all following recurrences
+ * of a given repeating activity should adapt to the submitted changes.
+ *
+ * @param {Object} props - The component props.
+ * @param {Function} [props.onClose] - Callback function executed when closing the component.
+ * @param {Function} [props.handleScheduleChange] - Callback function to handle schedule changes for the recurring activity.
+ * @param {Function} [props.handleDeleteRepeatActivity] - Callback function to handle deletion of the recurring activity.
+ * @param {boolean} [props.isDelete] - Indicates if the operation is a delete request (`true`) or not (`false`).
+ * @param {boolean} [props.isFirstRepeating] - Indicates if the activity is the first occurrence in the repeating series.
+ */
 export default ({
   onClose,
   handleScheduleChange,

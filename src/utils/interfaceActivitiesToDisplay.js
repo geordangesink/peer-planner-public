@@ -1,4 +1,31 @@
-// Logic for displaying the activities on week layout accordingly
+// Logic for displaying the activities on week layout according to saved details
+
+/**
+ * - takes current scheduele and dates at display -> returns Arrays of activity boxes
+ * @param {Map} currentSchedule - Map of current Schedule
+ * @param {Array} displayedDates - array of currently displayed Dates (as Date object)
+ * @returns {{
+ *   filteredActivities: Array<{ key: string, date: Date, startTime: Date, endTime: Date, detailsMap: Map<any, any> }>,
+ *   multiDayActivities: Array<Array<{ key: string, date: Date, startTime: Date, endTime: Date, detailsMap: Map<any, any> }>>
+ * }} - nested Array within multiDayActivitues are indexed for each day of the week
+ *
+ * @description
+ * The `detailsMap` is a `Map<string, value>` with the following possible key-value pairs:
+ *
+ * - `"from"`: `Date` - The start date and time.
+ * - `"until"`: `Date` - The end date and time.
+ * - `"dateExceptions"`: `Array<any>` - A list of date exceptions (can be an empty array).
+ * - `"groupKey"`: `null` - Reserved for future grouping logic.
+ * - `"isEvent"`: `boolean` - Whether the activity is an event.
+ * - `"title"`: `string` - The event title (default: `"(No Title)"`).
+ * - `"description"`: `string` - The event description.
+ * - `"complete"`: `null` - Reserved for tracking completion.
+ * - `"notification"`: `string` - Notification time (e.g., `"30m"` for 30 minutes before).
+ * - `"repeat"`: `string` - Repeat rule (e.g., `"no-repeat"`).
+ * - `"endRepeat"`: `string` - When the repeat rule ends (e.g., `"never"`).
+ * - `"customRepeat"`: `string` - Custom repeat settings.
+ * - `"color"`: `string` - Color code for the activity (e.g., `"#7b0323"`).
+ */
 
 export default function (currentSchedule, displayedDates) {
   // initialize array as [key, value] for all activities

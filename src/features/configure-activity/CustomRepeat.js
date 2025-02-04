@@ -1,15 +1,22 @@
-// TODO: make it less hacky lol
-
 import { html } from 'htm/react';
 import { useState, useEffect, useRef } from 'react';
 import PopupWindow from '../../components/PopupWindow';
 import useDate from '../../hooks/useDate';
 
+// TODO: make it less hacky lol
+
+/**
+ * Handles the logic for saving the customized repeating pattern
+ * and displays the UI of the respective window.
+ *
+ * @param {Object} props - The component props.
+ * @param {boolean} props.isVisible - Indicates if the UI window for customizing the repeating pattern is visible.
+ * @param {Function} props.onCancel - Callback function to handle cancellation of the action.
+ * @param {Function} props.onSave - Callback function to handle saving the repeating pattern.
+ */
 export default ({ isVisible, onCancel, onSave }) => {
-  // imports
   const { currentDate } = useDate();
 
-  // define new react hooks/refs
   // saved settings
   const [repeatEveryNum, setRepeatEveryNum] = useState(1);
   const [selectedTimeframeSaved, setSelectedTimeframeSaved] = useState('week');

@@ -1,24 +1,31 @@
-import Autobase from "autobase";
-import b4a from "b4a";
-import Hyperbee from "hyperbee";
-import { EventEmitter } from "events";
+import Autobase from 'autobase';
+import b4a from 'b4a';
+import Hyperbee from 'hyperbee';
+import { EventEmitter } from 'events';
 
+/**
+ * Hyperbee implementation for Autobase
+ */
 class Autobee extends Autobase {
   constructor(store, bootstrap, handlers = {}) {
-    if (bootstrap && typeof bootstrap !== "string" && !b4a.isBuffer(bootstrap)) {
+    if (
+      bootstrap &&
+      typeof bootstrap !== 'string' &&
+      !b4a.isBuffer(bootstrap)
+    ) {
       handlers = bootstrap;
       bootstrap = null;
     }
 
     const open = (viewStore) => {
-      const core = viewStore.get("autobee");
+      const core = viewStore.get('autobee');
       return new Hyperbee(core, {
         ...handlers,
         extension: false,
       });
     };
 
-    const apply = "apply" in handlers ? handlers.apply : Autobee.apply;
+    const apply = 'apply' in handlers ? handlers.apply : Autobee.apply;
 
     super(store, bootstrap, { ...handlers, open, apply });
     this.eventEmitter = new EventEmitter();
@@ -28,15 +35,16 @@ class Autobee extends Autobase {
     const b = view.batch({ update: false });
     // Decode operation node key if the Hyperbee view has a keyEncoding set & it
     // wasn't already decoded.
-    const decodeKey = (x) => (b4a.isBuffer(x) && view.keyEncoding ? view.keyEncoding.decode(x) : x);
+    const decodeKey = (x) =>
+      b4a.isBuffer(x) && view.keyEncoding ? view.keyEncoding.decode(x) : x;
 
     // Process operation nodes
     for (const node of batch) {
       const op = node.value;
-      if (op.type === "put") {
+      if (op.type === 'put') {
         const encKey = decodeKey(op.key);
         await b.put(encKey, op.value, op.opts);
-      } else if (op.type === "del") {
+      } else if (op.type === 'del') {
         const encKey = decodeKey(op.key);
         await b.del(encKey, op.opts);
       }
@@ -49,7 +57,8 @@ class Autobee extends Autobase {
     // Apply keyEncoding option if provided.
     // The key is preencoded so that the encoding survives being deserialized
     // from the input core
-    const encKey = opts && opts.keyEncoding ? opts.keyEncoding.encode(key) : key;
+    const encKey =
+      opts && opts.keyEncoding ? opts.keyEncoding.encode(key) : key;
 
     // Clear keyEncoding from options as it has now been applied
     if (opts && opts.keyEncoding) {
@@ -61,7 +70,7 @@ class Autobee extends Autobase {
 
   put(key, value, opts) {
     return this.append({
-      type: "put",
+      type: 'put',
       key: this._getEncodedKey(key, opts),
       value,
       opts,
@@ -70,7 +79,7 @@ class Autobee extends Autobase {
 
   del(key, opts) {
     return this.append({
-      type: "del",
+      type: 'del',
       key: this._getEncodedKey(key, opts),
       opts,
     });

@@ -1,7 +1,9 @@
 import { html } from 'htm/react';
 import { createContext, useState, useCallback } from 'react';
 
-// Create the DateContext
+/**
+ * Constext for currently selected Date and functions to change it
+ */
 const DateContext = createContext();
 
 const DateProvider = ({ children }) => {

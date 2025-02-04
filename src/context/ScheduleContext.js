@@ -1,9 +1,14 @@
-// TODO: use compact encoding for encoding and decoding
 import { html } from 'htm/react';
 import { createContext, useEffect, useState, useRef } from 'react';
-import { mapToJson, jsonToMap } from '../utils/jsonMapSwitch';
+import { mapToJson, jsonToMap } from '../utils/parseMapJson';
 import { RoomManager } from '../lib/RoomManager';
 
+// TODO: use compact encoding for encoding and decoding
+
+/**
+ * Loads, mounts and selects personal calendar Schedule on Start
+ * Loads and mounts all Room Schdeules
+ */
 const ScheduleContext = createContext();
 
 const ScheduleProvider = ({ children }) => {
@@ -71,7 +76,7 @@ const ScheduleProvider = ({ children }) => {
       if (scheduleObj && scheduleObj.value) {
         scheduleMap = jsonToMap(scheduleObj.value.toString());
       } else {
-        scheduleMap = new Map();
+        scheduleMap = generateCalendarFrame();
       }
       setCurrentSchedule(scheduleMap);
       setSharedDbObject(roomManagerRef.current.rooms);

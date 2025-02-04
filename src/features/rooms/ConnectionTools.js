@@ -1,14 +1,22 @@
-// TODO: move components to sidebar container
 import { html } from 'htm/react';
 import { useState } from 'react';
 import Button from '../../components/Button';
 
-export default ({ setIsCreate, roomInfoComp }) => {
+// TODO: move components to sidebar container
+
+/**
+ * Enables room quick search (in progress) and functionality for joining or creating a new room.
+ *
+ * @param {Object} props - The component props.
+ * @param {Function} [props.setIsCreate] - Callback function to set whether the form is for creating a new room (`true`) or not (`false`).
+ * @param {Object} [props.visibilityRoomInfo] - custom hook to manage visibility of roominfo component
+ */
+export default ({ setIsCreate, visibilityRoomInfo }) => {
   const [searchInput, setSearchInput] = useState();
 
   const handleCreateRoom = async () => {
     setIsCreate(true);
-    roomInfoComp.handleMakeVisible();
+    visibilityRoomInfo.handleMakeVisible();
   };
 
   return html`

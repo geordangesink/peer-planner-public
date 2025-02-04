@@ -1,7 +1,9 @@
 import { html } from 'htm/react';
 import { useState, useEffect } from 'react';
 
-// display window control buttons based on OS
+/**
+ * Window controll bar
+ */
 export default () => {
   const [justifyClass, setJustifyClass] = useState('');
 

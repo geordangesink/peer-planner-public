@@ -6,10 +6,13 @@ import RoomInfo from '../features/rooms/RoomInfo';
 import RoomsList from '../features/rooms/RoomsList';
 import PopupWindow from '../components/PopupWindow';
 import useSchedule from '../hooks/useSchedule';
-import useIsVisible from '../hooks/useIsVisible';
+import useVisibility from '../hooks/useVisibility';
 
+/**
+ * Container for left sidebar (grey)
+ */
 export default () => {
-  const roomInfoComp = useIsVisible();
+  const visibilityRoomInfo = useVisibility();
   const { roomManagerRef } = useSchedule();
   const [isCreate, setIsCreate] = useState(false);
 
@@ -19,21 +22,16 @@ export default () => {
     await roomManagerRef.current.deleteRoom(room);
   };
 
-  const updateRoomInfo = async (room, info) => {
-    room.info = info;
-    await roomManagerRef.current.updateRoomInfo(room);
-  };
-
   return html`
     <nav
       className="flex w-[250px] min-w-[250px] bg-sidebar flex-col items-center border-r border-gray-40"
     >
       <${MonthDaysView} />
-      <${ConnectionTools} setIsCreate=${setIsCreate} roomInfoComp=${roomInfoComp} />
+      <${ConnectionTools} setIsCreate=${setIsCreate} visibilityRoomInfo=${visibilityRoomInfo} />
       <${PopupWindow}
-        isVisible=${roomInfoComp.isVisible}
+        isVisible=${visibilityRoomInfo.isVisible}
         onClose=${() => {
-          roomInfoComp.handleMakeInvisible();
+          visibilityRoomInfo.handleMakeInvisible();
           setIsCreate(false);
         }}
         widthPx=${600}
@@ -41,16 +39,15 @@ export default () => {
       >
         <${RoomInfo}
           onClose=${() => {
-            roomInfoComp.handleMakeInvisible();
+            visibilityRoomInfo.handleMakeInvisible();
             setIsCreate(false);
           }}
-          onSave=${updateRoomInfo}
           onLeave=${handleLeave}
           setIsCreate=${setIsCreate}
           isCreate=${isCreate}
         />
       </>
-      <${RoomsList} roomInfoComp=${roomInfoComp} />
+      <${RoomsList} visibilityRoomInfo=${visibilityRoomInfo} />
     </nav>
   `;
 };

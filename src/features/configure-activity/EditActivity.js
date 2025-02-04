@@ -2,10 +2,20 @@ import { html } from 'htm/react';
 import Button from '../../components/Button';
 import useSchedule from '../../hooks/useSchedule';
 import useActivityState from './useActivityState';
-import useIsVisible from '../../hooks/useIsVisible';
+import useVisibility from '../../hooks/useVisibility';
 import ActivityForm from './ActivityForm';
 import CustomRepeat from './CustomRepeat';
 
+/**
+ * Component to create a new or edit an existing activity.
+ *
+ * @param {Object} props - The component props.
+ * @param {Function} [props.onClose] - Callback function executed when closing the component.
+ * @param {Function} [props.requestScheduleChange] - Callback function for handling schedule changes.
+ * @param {Function} [props.requestDeleteActivity] - Callback function for deleting the activity.
+ * @param {Object} [props.oldActivityData] - Data of the activity being edited, if any.
+ * @param {boolean} [props.isCreate] - Indicates if the form is for creating a new activity (`true`), or editing an existing one (`false`).
+ */
 export default ({
   onClose,
   requestScheduleChange,
@@ -30,7 +40,7 @@ export default ({
     notificationRef,
     getActivityObject,
   } = useActivityState();
-  const isVisibleCustomRep = useIsVisible();
+  const visibilityCustomRep = useVisibility();
 
   const onDelete = () => {
     requestDeleteActivity();
@@ -73,19 +83,21 @@ export default ({
       )}
     </div>
     <${ActivityForm}
-      isCreate=${isCreate}
-      oldActivityData=${oldActivityData}
-      titleRef=${titleRef}
-      fromDateRef=${fromDateRef}
-      fromTimeRef=${fromTimeRef}
-      untilDateRef=${untilDateRef}
-      untilTimeRef=${untilTimeRef}
-      customRepeatRef=${customRepeatRef}
-      descriptionRef=${descriptionRef}
-      repeatRef=${repeatRef}
-      colorRef=${colorRef}
-      notificationRef=${notificationRef}
-      isVisibleCustomRep=${isVisibleCustomRep}
+      ...${{
+        isCreate,
+        oldActivityData,
+        visibilityCustomRep,
+        titleRef,
+        fromDateRef,
+        fromTimeRef,
+        untilDateRef,
+        untilTimeRef,
+        customRepeatRef,
+        descriptionRef,
+        repeatRef,
+        colorRef,
+        notificationRef,
+      }}
     >
     </>
     <${Button}
@@ -106,15 +118,15 @@ export default ({
       </>`
     }
     <${CustomRepeat}
-      isVisible=${isVisibleCustomRep.isVisible}
+      isVisible=${visibilityCustomRep.isVisible}
       onCancel=${() => {
         customRepeatRef.current === '' &&
           (repeatRef.current.value = 'no-repeat');
-        isVisibleCustomRep.handleMakeInvisible();
+        visibilityCustomRep.handleMakeInvisible();
       }}
       onSave=${(customRepeat) => {
         customRepeatRef.current = customRepeat;
-        isVisibleCustomRep.handleMakeInvisible();
+        visibilityCustomRep.handleMakeInvisible();
       }}
       title="Custom Repeat"
     />

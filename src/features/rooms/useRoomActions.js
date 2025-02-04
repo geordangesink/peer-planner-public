@@ -1,6 +1,9 @@
 import useSchedule from '../../hooks/useSchedule';
 
-export const useRoomActions = () => {
+/**
+ * Hook for actions on room info window
+ */
+export default () => {
   const { initCalendarRoom, sharedDbObject, roomIdRef } = useSchedule();
 
   const joinRoom = async (info, inviteKey) => {

@@ -1,6 +1,16 @@
 import { html } from 'htm/react';
 import { useRef } from 'react';
 
+/**
+ * Handles the display and behavior of a pop-up window.
+ *
+ * @param {Object} props - The component props.
+ * @param {number} [props.widthPx] - The width of the window in pixels.
+ * @param {number} [props.heightPx] - The height of the window in pixels.
+ * @param {boolean} [props.isVisible] - Indicates if the pop-up window is currently visible.
+ * @param {Function} [props.onClose] - Executes when the window is closed, triggered only when 'CANCELED'.
+ * @param {HTMLElement} [props.children] - The content inside the pop-up window.
+ */
 export default ({ widthPx, heightPx, isVisible, onClose, children }) => {
   const popupContentRef = useRef(null);
 

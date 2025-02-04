@@ -1,11 +1,17 @@
 import { html } from 'htm/react';
-import { jsonToMap } from '../../utils/jsonMapSwitch';
+import { jsonToMap } from '../../utils/parseMapJson';
 import Button from '../../components/Button';
 import NavigationButtonGroup from '../../components/NavigationButtonGroup';
 import useDate from '../../hooks/useDate';
 import useSchedule from '../../hooks/useSchedule';
 import { useCallback, useMemo } from 'react';
 
+/**
+ * Header controls for the currently selected schedule.
+ *
+ * @param {Object} props - The component props.
+ * @param {Function} [props.handleMakeEditVisible] - Callback function to make the edit controls visible.
+ */
 export default ({ handleMakeEditVisible }) => {
   const { currentDate, changeWeek, handleToday } = useDate();
   const { db, roomIdRef, changeDisplayedSchedule } = useSchedule();

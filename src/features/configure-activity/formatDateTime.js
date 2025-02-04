@@ -1,3 +1,4 @@
+// formats date for ActivityForm
 export function formatDate(date) {
   const adjustedDate = new Date(date);
   const year = adjustedDate.getFullYear();
@@ -7,6 +8,7 @@ export function formatDate(date) {
   return `${year}-${month}-${day}`;
 }
 
+// formats time for ActivityForm
 export function formatTime(date) {
   const adjustedDate = new Date(date);
   const hour = String(adjustedDate.getHours()).padStart(2, '0');

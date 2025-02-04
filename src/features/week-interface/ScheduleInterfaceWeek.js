@@ -1,10 +1,22 @@
-// FIX-BUG: activities sometimes lag behind when switching pages of week
-import interfaceActivitiesToDisplay from './interfaceActivitiesToDisplay';
+import interfaceActivitiesToDisplay from '../../utils/interfaceActivitiesToDisplay';
 import { html } from 'htm/react';
 import { useEffect, useState } from 'react';
 import useDate from '../../hooks/useDate';
 import useSchedule from '../../hooks/useSchedule';
 
+// FIX-BUG: activities sometimes lag behind when switching pages of week
+
+/**
+ * Interactive interface for the currently displayed schedule, allowing users to modify
+ * and interact with the schedule's contents.
+ *
+ * @param {Object} props - The component props.
+ * @param {Function} [props.getGridLocation] - Function to retrieve the grid location of a schedule item.
+ * @param {Function} [props.requestScheduleChange] - Callback function to request changes to the schedule.
+ * @param {Function} [props.handleMakeEditVisible] - Callback function to make the edit controls visible.
+ * @param {Function} [props.setOldActivityData] - Callback function to set the data of an existing activity for editing.
+ * @param {Function} [props.setIsCreate] - Callback function to toggle whether the form is for creating a new activity or editing an existing one.
+ */
 export default ({
   getGridLocation,
   requestScheduleChange,
@@ -40,9 +52,11 @@ export default ({
   // filter schedule for currently displayed week
   useEffect(() => {
     if (!currentSchedule || displayedDates.length === 0) return;
-    // array of objects with information about every activity UI box (multi-day, repeating, overlapping from last week ... ect.)
+
     const { filteredActivities, multiDayActivities } =
       interfaceActivitiesToDisplay(currentSchedule, displayedDates);
+    console.log(filteredActivities);
+    console.log(multiDayActivities);
 
     setActivitiesForCurrentWeek(filteredActivities);
     setActivitiesMultiday(multiDayActivities);

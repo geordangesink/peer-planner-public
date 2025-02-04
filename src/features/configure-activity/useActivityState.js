@@ -2,6 +2,15 @@ import sodium from 'sodium-native';
 import { useState, useRef, useMemo } from 'react';
 import { formatDate, formatTime } from './formatDateTime';
 
+/**
+ * Helper function to create and return all information of an edited or created
+ * activity using the information from the ActivityForm.
+ *
+ * @param {Object} oldActivityData - The data of the activity being edited (if applicable).
+ * @param {boolean} isCreate - Indicates if the function is creating a new activity (`true`) or editing an existing one (`false`).
+ *
+ * @returns {Map} - The complete activity data after creation or edit.
+ */
 export default (oldActivityData, isCreate) => {
   const editOpts = useMemo(() => {
     if (!oldActivityData || isCreate) return {};

@@ -1,13 +1,20 @@
 import { html } from 'htm/react';
-import { jsonToMap } from '../../utils/jsonMapSwitch';
+import { jsonToMap } from '../../utils/parseMapJson';
 import useSchedule from '../../hooks/useSchedule';
 
-export default ({ roomInfoComp }) => {
+/**
+ * Displays a list of all created and joined rooms, without distinguishing
+ * between reader-only and editable rooms.
+ *
+ * @param {Object} props - The component props.
+ * @param {boolean} [props.visibilityRoomInfo] - Controls the visibility of the room information.
+ */
+export default ({ visibilityRoomInfo }) => {
   const { sharedDbObject, roomIdRef, changeDisplayedSchedule } = useSchedule();
 
   const handleClickRoom = async (roomId, room) => {
     if (roomIdRef.current === roomId) {
-      roomInfoComp.handleMakeVisible();
+      visibilityRoomInfo.handleMakeVisible();
     }
     roomIdRef.current = roomId;
 
