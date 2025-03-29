@@ -1,5 +1,4 @@
 import { html } from 'htm/react';
-import { jsonToMap } from '../../utils/parseMapJson';
 import Button from '../../components/Button';
 import NavigationButtonGroup from '../../components/NavigationButtonGroup';
 import useDate from '../../hooks/useDate';
@@ -14,22 +13,19 @@ import { useCallback, useMemo } from 'react';
  */
 export default ({ handleMakeEditVisible }) => {
   const { currentDate, changeWeek, handleToday } = useDate();
-  const { db, roomIdRef, changeDisplayedSchedule } = useSchedule();
+  const { roomManagerRef, localIdRef, changeDisplayedSchedule } = useSchedule();
 
   // memoize the function to show personal schedule
   const handleShowPersonalSchedule = useCallback(async () => {
-    roomIdRef.current = 'MyCalendar';
-    const schedule = await db.current.get('schedule');
-    if (
-      schedule &&
-      schedule.value &&
-      Object.keys(schedule.value).length !== 0
-    ) {
-      changeDisplayedSchedule(jsonToMap(schedule.value.toString()));
+    localIdRef.current = 'MyCalendar';
+    const schedule = await roomManagerRef.current.get('schedule');
+    console.log(schedule)
+    if (schedule) {
+      changeDisplayedSchedule(schedule);
     } else {
       changeDisplayedSchedule(new Map());
     }
-  }, [db, changeDisplayedSchedule, roomIdRef]);
+  }, [roomManagerRef, changeDisplayedSchedule, localIdRef]);
 
   // memoize the navigation to change week
   const handleWeekChange = useCallback(
@@ -80,7 +76,7 @@ export default ({ handleMakeEditVisible }) => {
         <div className="flex items-center w-[180px] justify-between">
           <${Button}
             variant="square"
-            isDisabled=${roomIdRef.current === 'MyCalendar'}
+            isDisabled=${localIdRef.current === 'MyCalendar'}
             onClick=${handleShowPersonalSchedule}
           >
             <span className="text-xs">My Calendar</span>

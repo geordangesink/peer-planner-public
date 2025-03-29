@@ -1,5 +1,4 @@
 import { html } from 'htm/react';
-import { jsonToMap } from '../../utils/parseMapJson';
 import useSchedule from '../../hooks/useSchedule';
 
 /**
@@ -10,23 +9,19 @@ import useSchedule from '../../hooks/useSchedule';
  * @param {boolean} [props.visibilityRoomInfo] - Controls the visibility of the room information.
  */
 export default ({ visibilityRoomInfo }) => {
-  const { sharedDbObject, roomIdRef, changeDisplayedSchedule } = useSchedule();
+  const { sharedDbObject, localIdRef, changeDisplayedSchedule } = useSchedule();
 
-  const handleClickRoom = async (roomId, room) => {
-    if (roomIdRef.current === roomId) {
+  const handleClickRoom = async (localId, room) => {
+    if (localIdRef.current === localId) {
       visibilityRoomInfo.handleMakeVisible();
     }
-    roomIdRef.current = roomId;
+    localIdRef.current = localId;
+    console.log(localId)
 
     // TODO: update dynamically
-    const bee = room.autobee;
-    const schedule = await bee.get('schedule');
-    if (
-      schedule &&
-      schedule.value &&
-      Object.keys(schedule.value).length !== 0
-    ) {
-      changeDisplayedSchedule(jsonToMap(schedule.value.toString()));
+    const schedule = await room.get('schedule');
+    if (schedule) {
+      changeDisplayedSchedule(schedule);
     } else {
       changeDisplayedSchedule(new Map());
     }
@@ -34,26 +29,24 @@ export default ({ visibilityRoomInfo }) => {
 
   return html`
     <section className="w-full overflow-y-auto overflow-x-hidden">
-      ${Object.entries(sharedDbObject).map(([roomId, room]) => {
-        if (roomId && room) {
+      ${Object.entries(sharedDbObject).map(([localId, room]) => {
+        if (localId && room) {
           return html`
             <section
-              className=${`w-full flex items-center cursor-pointer border-b border-gray-500/20 hover:bg-hoverButton ${roomId === roomIdRef.current ? 'bg-[#2a2c2e]' : ''}`}
-              key=${roomId + 'room-preview'}
-              onClick=${() => handleClickRoom(roomId, room)}
+              className=${`w-full flex items-center cursor-pointer border-b border-gray-500/20 hover:bg-hoverButton ${localId === localIdRef.current ? 'bg-[#2a2c2e]' : ''}`}
+              key=${localId + 'room-preview'}
+              onClick=${() => handleClickRoom(localId, room)}
             >
               <div
                 className="w-[40px] h-[40px] bg-black m-[5px] cursor-pointer"
-                style=${{ backgroundColor: room.info.color }}
+                style=${{ backgroundColor: room.custom.color }}
               ></div>
-              <section
-                className="flex mr-[5px] flex-col justify-around cursor-pointer"
-              >
+              <section className="flex mr-[5px] flex-col justify-around cursor-pointer">
                 <h5 className="cursor-pointer text-[1.2rem]">
-                  ${room.info.name || 'Unnamed Room'}
+                  ${room.custom.name || 'Unnamed Room'}
                 </h5>
                 <span className="room-description cursor-pointer text-[0.7rem]"
-                  >${room.info.description}</span
+                  >${room.custom.description}</span
                 >
               </section>
             </section>

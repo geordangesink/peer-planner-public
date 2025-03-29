@@ -24,18 +24,12 @@
     "test": "brittle test/*.test.js"
   },
   "dependencies": {
-    "autobase": "^6.5.8",
-    "blind-pairing": "^2.3.1",
-    "corestore": "^6.18.4",
+    "flockmanager": "^1.2.1",
     "htm": "^3.1.1",
-    "hyperbee": "^2.20.2",
     "hypercore": "^10.37.25",
     "hypercore-crypto": "^3.4.2",
-    "hyperswarm": "^4.8.4",
     "pear": "^1.0.6",
-    "random-access-memory": "^6.2.1",
-    "save": "^2.9.0",
-    "sodium-native": "^4.1.1",
-    "z32": "^1.1.0"
+    "ready-resource": "^1.1.2",
+    "save": "^2.9.0"
   }
 }

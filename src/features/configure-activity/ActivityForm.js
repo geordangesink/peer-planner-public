@@ -37,7 +37,7 @@ export default ({
   notificationRef,
 }) => {
   const { editOpts } = useActivityState(oldActivityData, isCreate);
-  const { sharedDbObject, roomIdRef } = useSchedule();
+  const { sharedDbObject, localIdRef } = useSchedule();
   const { currentDate } = useDate();
 
   const weekdayStr = useMemo(
@@ -176,8 +176,8 @@ export default ({
       <input
         type="color"
         defaultValue=${editOpts.color ||
-        (sharedDbObject[roomIdRef.current]
-          ? sharedDbObject[roomIdRef.current].info.color
+        (sharedDbObject[localIdRef.current]
+          ? sharedDbObject[localIdRef.current].custom.color
           : '#7B0323')}
         ref=${colorRef}
       />

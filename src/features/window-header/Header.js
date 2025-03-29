@@ -6,7 +6,7 @@ import useSchedule from '../../hooks/useSchedule';
  * Header elements of the Calendar app
  */
 export default () => {
-  const { roomIdRef, sharedDbObject } = useSchedule();
+  const { localIdRef, sharedDbObject } = useSchedule();
   const [dateTime, setDateTime] = useState(new Date());
 
   useEffect(() => {
@@ -40,9 +40,9 @@ export default () => {
       className="flex flex-grow items-center justify-center h-title-bar border-b border-gray-40 pt-[5px]"
     >
       <h3>
-        ${roomIdRef.current === 'MyCalendar'
+        ${localIdRef.current === 'MyCalendar'
           ? 'My Calendar'
-          : sharedDbObject[roomIdRef.current].info.name || 'Unnamed Calendar'}
+          : sharedDbObject[localIdRef.current].custom?.name || 'Unnamed Calendar'}
       </h3>
     </div>
   </header>`;

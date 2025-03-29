@@ -18,7 +18,7 @@ export default () => {
 
   const handleLeave = async (room) => {
     // TODO: need to add function to roomManager
-    // sharedDbObject[room.roomId] = undefined;
+    // sharedDbObject[room.localId] = undefined;
     await roomManagerRef.current.deleteRoom(room);
   };
 

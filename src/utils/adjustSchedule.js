@@ -22,6 +22,7 @@ export default function (currentSchedule, activity) {
   const { key, date, startTime, detailsMap, timeIndexOffset } =
     activity.oldActivityData;
 
+  console.log(currentSchedule)
   // if edited using configure activity window (only extract double nested map [[activityDetails, values]])
   let updatedActivity;
   if (activity.updatedActivity.size)

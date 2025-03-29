@@ -15,7 +15,7 @@ import useSchedule from '../../hooks/useSchedule';
  * @param {Function} [props.setIsCreate] - Callback function to toggle the state of creating a new room (`true`) or editing an existing one (`false`).
  */
 export default ({ onClose, onLeave, isCreate, setIsCreate }) => {
-  const { saveRoomInfo, sharedDbObject, roomIdRef } = useRoomActions();
+  const { saveRoomInfo, sharedDbObject, localIdRef } = useRoomActions();
   const { roomManagerRef } = useSchedule();
 
   const [isCreating, setIsCreating] = useState(false);
@@ -34,6 +34,7 @@ export default ({ onClose, onLeave, isCreate, setIsCreate }) => {
   const handleSave = async () => {
     const info = getInfo();
     setIsCreating(true);
+    console.log(info)
 
     try {
       const room = await saveRoomInfo(isCreate, info, inviteKey);
@@ -42,8 +43,6 @@ export default ({ onClose, onLeave, isCreate, setIsCreate }) => {
         setIsCreating(false);
         return;
       } else if (!isCreate) {
-        room.info = info;
-        await roomManagerRef.current.updateRoomInfo(room);
         onClose();
       }
       setInviteKey('');
@@ -55,7 +54,7 @@ export default ({ onClose, onLeave, isCreate, setIsCreate }) => {
     }
   };
 
-  const currentRoom = sharedDbObject[roomIdRef.current];
+  const currentRoom = sharedDbObject[localIdRef.current];
 
   return html`
 
@@ -66,18 +65,18 @@ export default ({ onClose, onLeave, isCreate, setIsCreate }) => {
             type="text"
             placeholder="Unnamed Room"
             ref=${calendarNameRef}
-            defaultValue=${isCreate ? '' : currentRoom.info.name}
+            defaultValue=${isCreate ? '' : currentRoom.custom.name}
           />
           <textarea
             id="calendar-description"
             placeholder="Description"
             ref=${calendarDescriptionRef}
-            defaultValue=${isCreate ? '' : currentRoom.info.description}
+            defaultValue=${isCreate ? '' : currentRoom.custom.description}
           />
           <input
             type="color"
             ref=${calendarColorRef}
-            defaultValue=${isCreate ? '#3A037C' : currentRoom.info.color}
+            defaultValue=${isCreate ? '#3A037C' : currentRoom.custom.color}
           />
         </form>
 
@@ -92,7 +91,7 @@ export default ({ onClose, onLeave, isCreate, setIsCreate }) => {
               />`
             : html`<div className="w-4/5 text-sm">
                 <h5>Invite Key:</h5>
-                <p className="break-words">${currentRoom.inviteHex}</p>
+                <p className="break-words">${currentRoom.invite}</p>
               </div>`
         }
 

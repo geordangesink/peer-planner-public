@@ -1,7 +1,6 @@
 import { html } from 'htm/react';
 import { createContext, useEffect, useState, useRef } from 'react';
-import { mapToJson, jsonToMap } from '../utils/parseMapJson';
-import { RoomManager } from '../lib/RoomManager';
+import FlockManager from 'flockmanager';
 
 // TODO: use compact encoding for encoding and decoding
 
@@ -14,9 +13,8 @@ const ScheduleContext = createContext();
 const ScheduleProvider = ({ children }) => {
   const [currentSchedule, setCurrentSchedule] = useState(new Map());
   const [sharedDbObject, setSharedDbObject] = useState(new Object());
-  const db = useRef();
-  const roomManagerRef = useRef(new RoomManager());
-  const roomIdRef = useRef('MyCalendar');
+  const roomManagerRef = useRef(new FlockManager());
+  const localIdRef = useRef('MyCalendar');
 
   Pear.teardown(async () => {
     await roomManagerRef.current.cleanup();
@@ -27,30 +25,26 @@ const ScheduleProvider = ({ children }) => {
   }, []);
 
   // sets currentSchedule state to personal schedule
-  // and mounts personal bee on db ref
   const getPersonalSchedule = async () => {
     try {
       await roomManagerRef.current.ready();
-      const bee = roomManagerRef.current.localBee;
 
-      const result = await bee.get('schedule');
-      if (result && result.value) {
-        const scheduleMap = jsonToMap(result.value.toString());
-        setCurrentSchedule(scheduleMap);
+      const result = await roomManagerRef.current.get('schedule');
+      if (result) {
+        setCurrentSchedule(result);
       } else {
         const newSchedule = generateCalendarFrame();
         setCurrentSchedule(newSchedule);
-        await bee.put('schedule', Buffer.from(mapToJson(newSchedule)));
+        await roomManagerRef.current.set('schedule', newSchedule);
       }
-      db.current = bee;
     } catch (error) {
       console.error('Error initializing Personal database:', error);
     }
   };
 
-  // sets sharedDbObject state to object with all rooms as prop {roomId: room}
+  // sets sharedDbObject state to object with all rooms as prop {localId: room}
   const loadSharedSchedules = async () => {
-    const rooms = roomManagerRef.current.rooms;
+    const rooms = roomManagerRef.current.flocks;
     if (Object.keys(rooms).length) {
       setSharedDbObject(rooms);
     } else {
@@ -61,25 +55,21 @@ const ScheduleProvider = ({ children }) => {
   // adds new room (create or join)
   const initCalendarRoom = async (opts = {}) => {
     try {
-      const room = await roomManagerRef.current.initReadyRoom({
-        ...opts,
-        isNew: true,
-      });
+      const room = await roomManagerRef.current.initFlock(opts.inviteKey, {...opts});
+      console.log(opts.custom)
       if (!room) return null;
 
-      roomIdRef.current = room.roomId;
-
-      const bee = room.autobee;
-      const scheduleObj = await bee.get('schedule');
+      localIdRef.current = room.localId;
+      const scheduleObj = await room.get('schedule');
 
       let scheduleMap;
-      if (scheduleObj && scheduleObj.value) {
-        scheduleMap = jsonToMap(scheduleObj.value.toString());
+      if (scheduleObj) {
+        scheduleMap = scheduleObj;
       } else {
         scheduleMap = generateCalendarFrame();
       }
       setCurrentSchedule(scheduleMap);
-      setSharedDbObject(roomManagerRef.current.rooms);
+      setSharedDbObject(roomManagerRef.current.flocks);
 
       return room;
     } catch (error) {
@@ -92,22 +82,21 @@ const ScheduleProvider = ({ children }) => {
     setCurrentSchedule(updated);
 
     // update personal schedule
-    if (roomIdRef.current === 'MyCalendar') {
-      if (db.current && db.current.writable) {
+    if (localIdRef.current === 'MyCalendar') {
+      if (roomManagerRef.current.localBee && roomManagerRef.current.localBee.writable) {
         try {
-          await db.current.put('schedule', Buffer.from(mapToJson(updated)));
+          console.log()
+          await roomManagerRef.current.set('schedule', updated);
         } catch (err) {
           console.error('Error updating schedule in personal database:', err);
         }
       }
     } else {
-      if (
-        sharedDbObject[roomIdRef.current] &&
-        sharedDbObject[roomIdRef.current].autobee.writable
-      ) {
-        const bee = sharedDbObject[roomIdRef.current].autobee;
+      if (sharedDbObject[localIdRef.current] && sharedDbObject[localIdRef.current].autobee.writable) {
+        console.log('UPDATING')
+        const room = sharedDbObject[localIdRef.current];
         try {
-          await bee.put('schedule', Buffer.from(mapToJson(updated)));
+          await room.set('schedule', updated);
         } catch (err) {
           console.error('Error updating schedule in shared database:', err);
         }
@@ -125,9 +114,8 @@ const ScheduleProvider = ({ children }) => {
   return html`
     <${ScheduleContext.Provider}
       value=${{
-        db,
         roomManagerRef,
-        roomIdRef,
+        localIdRef,
         currentSchedule,
         sharedDbObject,
         changeDisplayedSchedule,
