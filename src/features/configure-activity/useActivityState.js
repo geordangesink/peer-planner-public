@@ -1,6 +1,7 @@
 import sodium from 'sodium-native';
 import { useState, useRef, useMemo } from 'react';
 import { formatDate, formatTime } from './formatDateTime';
+import useSchedule from '../../hooks/useSchedule';
 
 /**
  * Helper function to create and return all information of an edited or created
@@ -12,6 +13,7 @@ import { formatDate, formatTime } from './formatDateTime';
  * @returns {Map} - The complete activity data after creation or edit.
  */
 export default (oldActivityData, isCreate) => {
+  const { sharedDbObject, localIdRef } = useSchedule();
   const editOpts = useMemo(() => {
     if (!oldActivityData || isCreate) return {};
     return {
@@ -80,7 +82,7 @@ export default (oldActivityData, isCreate) => {
           'never',
       ], // Date Object or String ("never")
       ['customRepeat', customRepeatRef.current], // cuntom repeat object
-      ['color', colorRef.current.value], // Hex String
+      ['color', sharedDbObject[localIdRef.current]?.custom.color === colorRef.current.value ? undefined : colorRef.current.value], // Hex String
     ]);
     // TODO: right now 'custumRepeat' object has a .ends.type and .ends.spec prop...\
     // however it only needs the .ends.type (recurrance or date), sice the 'endRepeat' key

@@ -25,7 +25,7 @@ export default ({
   setIsCreate,
 }) => {
   const { currentDate, setDate } = useDate();
-  const { currentSchedule } = useSchedule();
+  const { currentSchedule, sharedDbObject, localIdRef } = useSchedule();
   const [dragPreviewStyle, setDragPreviewStyle] = useState({ display: 'none' });
   const [activitiesForCurrentWeek, setActivitiesForCurrentWeek] = useState([]);
   const [activitiesMultiday, setActivitiesMultiday] = useState([]);
@@ -267,7 +267,7 @@ export default ({
                               <div
                                 className="flex justify-between flex-col p-[5px] rounded-[5px] overflow-hidden h-full w-[calc(100%-5px)] ml-[5px] text-left opacity-[0.9] z-[3] px-[5px] m-0"
                                 style=${{
-                                  backgroundColor: detailsMap.get('color'),
+                                  backgroundColor: detailsMap.get('color') || sharedDbObject[localIdRef.current]?.custom.color,
                                 }}
                               >
                                 <div
@@ -397,7 +397,7 @@ export default ({
                         <div
                           className="flex justify-between flex-col p-[5px] rounded-[5px] overflow-hidden h-full w-[calc(100%-5px)] ml-[5px] text-left opacity-[0.9] z-[3]"
                           style=${{
-                            backgroundColor: detailsMap.get('color'),
+                            backgroundColor: detailsMap.get('color') || sharedDbObject[localIdRef.current]?.custom.color,
                           }}
                         >
                           <div className="task-activity-title flex flex-col">
